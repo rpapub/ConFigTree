@@ -17,30 +17,31 @@ Goal: prove the pipeline works end-to-end with zero configuration.
 
 ---
 
-## Feedback checkpoint
+## v0.2 — Multi-format input, configurable output, UiPath integration ✓
 
-Share v0.1 and collect feedback before expanding scope.
+Goal: works with any config file format; output is directly usable in UiPath REFramework.
+
+- [x] Settings panel — namespace, root class, filename, .NET version, toggles for XML docs / ToString / ToJson / IsPristine / Loader
+- [x] Download as `.cs` file
+- [x] ToString override on root class
+- [x] ToJson helper using `System.Text.Json`
+- [x] IsPristine / DriftReport — schema manifest + `CheckPristine()` for runtime drift detection (#22)
+- [x] Loader — static factory per source format; xlsx uses DataTable, JSON/TOML/YAML use file-based deserializers (#27)
+- [x] JSON input parser — nested sections → nested C# classes (#25)
+- [x] TOML input parser — native type inference via smol-toml (#26)
+- [x] YAML input parser — reuses JSON inference via js-yaml (#26)
+- [x] Format dispatch — extension → parser adapter; `sourceFormat` threaded through to code generator (#29)
+- [x] SchemaNode IR — unified intermediate representation decouples parsers from generator (#24)
+- [x] CodeWriter — indentation-aware code generation helper (#24)
+- [x] UiPath clipboard snippet — Ctrl+V paste into UiPath Studio (#28)
+- [x] Sheet selection UI with per-sheet checkboxes and asset badges
+- [x] Error handling — unsupported file type, parse failure, missing header, empty sheet (#21)
+- [x] Test fixtures — JSON, TOML, YAML, INI mirrors of `Config_Basic.xlsx`
 
 ---
 
-## v0.2 — Configurable and richer output
+## v0.3 — Quality and reach
 
-Goal: settings are interactive, output is more useful.
-
-- [ ] Settings panel — editable namespace, root class name, .NET version, XML doc comments toggle (#12)
-- [ ] Download as `.cs` file
-- [ ] `.ToString()` override on generated classes
-- [ ] `.ToJson()` / JSON serialization helper
-- [ ] PII annotation support (flag properties containing sensitive data)
-- [ ] Syntax-highlighted output polish (#10 follow-up)
-
----
-
-## v0.3 — Dynamic sheet handling
-
-Goal: works with any workbook, not just the REFramework template.
-
-- [ ] Read all actual sheet names from the uploaded file
-- [ ] Sheet selection UI — checkboxes to include/exclude
-- [ ] localStorage — persist user preferences between sessions
-- [ ] Basic error handling — wrong file type, missing header, empty sheet
+- [ ] PII annotation support — flag sensitive properties in generated class (#17)
+- [ ] README update — reflect v0.2 feature set with usage screenshots
+- [ ] GitHub Release tags for v0.1 and v0.2
