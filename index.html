@@ -53,12 +53,14 @@
       </div>
 
       <div slot="end" class="panel">
-        <h2>Output</h2>
+        <div style="display:flex; align-items:center; justify-content:space-between;">
+          <h2>Output</h2>
+          <wa-button id="copy-btn" variant="neutral" size="small">
+            <wa-icon slot="prefix" name="copy"></wa-icon>
+            Copy
+          </wa-button>
+        </div>
         <pre><code id="output" class="language-csharp"></code></pre>
-        <wa-button id="copy-btn" variant="neutral" size="small">
-          <wa-icon slot="prefix" name="copy"></wa-icon>
-          Copy
-        </wa-button>
       </div>
     </wa-split-panel>
 
