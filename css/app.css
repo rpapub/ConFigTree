@@ -133,17 +133,19 @@ header h1 {
 }
 
 /* Output */
-#output {
+pre:has(#output) {
   flex: 1;
-  background-color: var(--sol-base2);
+  margin: 0;
   border: 1px solid var(--sol-base1);
   border-radius: 4px;
-  padding: 0.75rem;
   overflow: auto;
-  white-space: pre;
-  font-size: 0.85rem;
-  color: var(--sol-base01);
   min-height: 4rem;
+  background-color: var(--sol-base2) !important;
+}
+
+#output {
+  font-size: 0.85rem;
+  background-color: var(--sol-base2) !important;
 }
 
 #copy-btn {

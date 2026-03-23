@@ -11,6 +11,11 @@
   <!-- SheetJS — pinned -->
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 
+  <!-- highlight.js — pinned, Solarized Light theme -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/solarized-light.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/csharp.min.js"></script>
+
   <link rel="stylesheet" href="css/app.css" />
 </head>
 <body>
@@ -49,7 +54,7 @@
 
       <div slot="end" class="panel">
         <h2>Output</h2>
-        <pre id="output"></pre>
+        <pre><code id="output" class="language-csharp"></code></pre>
         <wa-button id="copy-btn" variant="neutral" size="small">
           <wa-icon slot="prefix" name="copy"></wa-icon>
           Copy

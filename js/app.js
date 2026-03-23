@@ -39,9 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("copy-btn").addEventListener("click", () => {
-    const text = document.getElementById("output").textContent;
-    if (!text) return;
-    navigator.clipboard.writeText(text).then(() => {
+    if (!lastOutput) return;
+    navigator.clipboard.writeText(lastOutput).then(() => {
       status.textContent = "Copied to clipboard.";
       setTimeout(() => { status.textContent = ""; }, 2000);
     });
@@ -162,9 +161,13 @@ function getCellWithType(ws, rowIndex, colIndex) {
 
 // --- Class generator (issue #6) ---
 
+let lastOutput = "";
+
 function onSheetsReady(sheets) {
-  const output = generateCSharp(sheets);
-  document.getElementById("output").textContent = output;
+  lastOutput = generateCSharp(sheets);
+  const el = document.getElementById("output");
+  el.textContent = lastOutput;
+  hljs.highlightElement(el);
 }
 
 function generateCSharp(sheets) {
