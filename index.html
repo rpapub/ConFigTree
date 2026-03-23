@@ -60,6 +60,10 @@
           <span class="settings-label">ToJson</span>
           <wa-switch id="cfg-tojson"></wa-switch>
         </label>
+        <label class="settings-field">
+          <span class="settings-label">IsPristine</span>
+          <wa-switch id="cfg-pristine"></wa-switch>
+        </label>
         <wa-button id="regenerate-btn" variant="neutral" size="small" disabled>
           <wa-icon slot="prefix" name="refresh"></wa-icon>
           Regenerate
@@ -87,6 +91,17 @@
             </wa-button>
           </div>
           <div id="sheet-checkboxes"></div>
+        </div>
+
+        <div id="uipath-snippet" style="display:none;">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <h2>UiPath</h2>
+            <wa-button id="xaml-copy-btn" variant="neutral" size="small">
+              <wa-icon slot="start" name="clipboard"></wa-icon>
+              Copy Assign
+            </wa-button>
+          </div>
+          <span class="snippet-hint">Paste into UiPath Studio with Ctrl+V</span>
         </div>
 
         <div id="warnings"></div>

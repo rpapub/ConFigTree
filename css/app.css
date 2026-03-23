@@ -168,6 +168,11 @@ wa-file-input:not(:state(blank))::part(dropzone) {
   gap: 0.3rem;
 }
 
+.snippet-hint {
+  font-size: 0.75rem;
+  color: var(--sol-base1);
+}
+
 #status {
   font-size: 0.8rem;
   color: var(--sol-base01);

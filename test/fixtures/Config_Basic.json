@@ -1,0 +1,18 @@
+{
+  "Settings": {
+    "OrchestratorQueueName": { "value": "BasicQueue",  "description": "Orchestrator queue name." },
+    "OrchestratorFolderPath": { "value": "RPA/Basic",  "description": "Orchestrator folder path." },
+    "MaxItemsPerRun":         { "value": 10,            "description": "Max items to process per run." },
+    "RetryCount":             { "value": 3,             "description": "Number of retries on failure." },
+    "LogPrefix":              { "value": "BASIC",       "description": "Prefix for log messages." }
+  },
+  "Constants": {
+    "MaxRetryNumber":               { "value": 0, "description": "Must be 0 when using Orchestrator queues." },
+    "MaxConsecutiveSystemExceptions": { "value": 3, "description": "Stop job after this many consecutive errors." },
+    "RetryNumberGetTransactionItem":  { "value": 2, "description": "Retries for GetTransactionItem activity." }
+  },
+  "Assets": {
+    "CredentialM365": { "assetName": "cred_m365_basic", "folder": "Shared", "description": "M365 service credential." },
+    "CredentialFtp":  { "assetName": "cred_ftp_basic",  "folder": "Shared", "description": "FTP server credential." }
+  }
+}

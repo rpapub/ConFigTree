@@ -10,7 +10,8 @@ const CONFIG_DEFAULTS = {
   dotnetVersion:  { value: "net6",        type: "select", inputId: "cfg-dotnet-version" },
   xmlDocComments:   { value: true,  type: "switch", inputId: "cfg-xml-docs" },
   generateToString: { value: false, type: "switch", inputId: "cfg-tostring" },
-  generateToJson:   { value: false, type: "switch", inputId: "cfg-tojson"   },
+  generateToJson:    { value: false, type: "switch", inputId: "cfg-tojson"    },
+  generatePristine:  { value: false, type: "switch", inputId: "cfg-pristine"  },
 };
 
 const STORAGE_KEY = "conformmold.config";
@@ -87,6 +88,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("status-text").textContent = "";
       document.getElementById("regenerate-btn").setAttribute("disabled", "");
       document.getElementById("download-btn").setAttribute("disabled", "");
+      document.getElementById("uipath-snippet").style.display = "none";
       clearSheetSelection();
       clearWarnings();
     }
@@ -98,6 +100,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("sheets-regenerate-btn").addEventListener("click", () => {
     if (lastSheets) regenerateFromSelection();
+  });
+
+  document.getElementById("xaml-copy-btn").addEventListener("click", () => {
+    navigator.clipboard.writeText(generateXamlSnippet()).then(() => {
+      const btn = document.getElementById("xaml-copy-btn");
+      btn.textContent = "Copied!";
+      setTimeout(() => { btn.innerHTML = '<wa-icon slot="start" name="clipboard"></wa-icon> Copy Assign'; }, 1500);
+    });
   });
 
   document.getElementById("download-btn").addEventListener("click", () => {
@@ -314,6 +324,7 @@ function onSheetsReady(sheets) {
   }
   document.getElementById("regenerate-btn").removeAttribute("disabled");
   document.getElementById("download-btn").removeAttribute("disabled");
+  document.getElementById("uipath-snippet").style.display = "";
 }
 
 function generateCSharp(sheets) {
@@ -321,7 +332,9 @@ function generateCSharp(sheets) {
 
   // Usings
   lines.push("using System;");
-  if (config.generateToJson) lines.push("using System.Text.Json;");
+  if (config.generateToJson)    lines.push("using System.Text.Json;");
+  if (config.generatePristine)  lines.push("using System.Collections.Generic;");
+  if (config.generatePristine)  lines.push("using System.Linq;");
   lines.push("");
 
   lines.push(`namespace ${config.namespace}`);
@@ -347,7 +360,55 @@ function generateCSharp(sheets) {
   if (config.generateToJson) {
     lines.push(`        public string ToJson() => JsonSerializer.Serialize(this);`);
   }
+  if (config.generatePristine) {
+    lines.push("");
+    lines.push("        public static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> Schema =");
+    lines.push("            new Dictionary<string, IReadOnlyList<string>>");
+    lines.push("            {");
+    for (const sheet of sheets) {
+      const keys = sheet.rows.map((r) => `"${r.name}"`).join(", ");
+      lines.push(`                ["${sheet.name}"] = new[] { ${keys} },`);
+    }
+    lines.push("            };");
+    lines.push("");
+    lines.push("        public DriftReport CheckPristine(IDictionary<string, IEnumerable<string>> actualKeys)");
+    lines.push("        {");
+    lines.push("            var missing = new List<string>();");
+    lines.push("            var extra   = new List<string>();");
+    lines.push("            foreach (var (sheet, expected) in Schema)");
+    lines.push("            {");
+    lines.push("                var actual      = actualKeys.TryGetValue(sheet, out var k)");
+    lines.push("                    ? new HashSet<string>(k) : new HashSet<string>();");
+    lines.push("                var expectedSet = new HashSet<string>(expected);");
+    lines.push("                missing.AddRange(expectedSet.Where(e => !actual.Contains(e)).Select(e => $\"{sheet}.{e}\"));");
+    lines.push("                extra.AddRange(actual.Where(a => !expectedSet.Contains(a)).Select(a => $\"{sheet}.{a}\"));");
+    lines.push("            }");
+    lines.push("            return new DriftReport(missing, extra);");
+    lines.push("        }");
+  }
   lines.push("    }");
+
+  // DriftReport class — emitted once when generatePristine is on
+  if (config.generatePristine) {
+    lines.push("");
+    lines.push("    public class DriftReport");
+    lines.push("    {");
+    lines.push("        public IReadOnlyList<string> MissingKeys { get; }");
+    lines.push("        public IReadOnlyList<string> ExtraKeys   { get; }");
+    lines.push("        public bool IsPristine => !MissingKeys.Any() && !ExtraKeys.Any();");
+    lines.push("");
+    lines.push("        public DriftReport(IReadOnlyList<string> missing, IReadOnlyList<string> extra)");
+    lines.push("        {");
+    lines.push("            MissingKeys = missing;");
+    lines.push("            ExtraKeys   = extra;");
+    lines.push("        }");
+    lines.push("");
+    lines.push("        public override string ToString() =>");
+    lines.push("            IsPristine");
+    lines.push("                ? \"Pristine\"");
+    lines.push("                : $\"Drift detected — Missing: [{string.Join(\", \", MissingKeys)}] Extra: [{string.Join(\", \", ExtraKeys)}]\";");
+    lines.push("    }");
+  }
 
   // OrchestratorAsset helper — emit once if any asset sheet present
   const hasAssets = sheets.some((s) => s.schema === "asset");
@@ -417,6 +478,37 @@ function defaultInitializer(csType) {
     case "OrchestratorAsset": return "= new()";
     default:                return "";
   }
+}
+
+// --- UiPath clipboard snippet (#28) ---
+
+function generateXamlSnippet() {
+  const className = config.rootClassName || "AppConfig";
+  const refId     = "__ReferenceID0";
+
+  // UiPath Studio clipboard envelope — utf-16 declaration is required by Studio's paste handler
+  return `<?xml version="1.0" encoding="utf-16"?>`
+    + `<ClipboardData Version="1.0"`
+    + ` xmlns="http://schemas.microsoft.com/netfx/2009/xaml/activities/presentation"`
+    + ` xmlns:p="http://schemas.microsoft.com/netfx/2009/xaml/activities"`
+    + ` xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"`
+    + ` xmlns:scg="clr-namespace:System.Collections.Generic;assembly=System.Private.CoreLib"`
+    + ` xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">`
+    + `<ClipboardData.Data>`
+    + `<scg:List x:TypeArguments="x:Object" Capacity="1">`
+    + `<p:Assign x:Name="${refId}" VirtualizedContainerService.HintSize="449.6,165.6">`
+    + `<p:Assign.To><p:OutArgument x:TypeArguments="x:Object">[Config]</p:OutArgument></p:Assign.To>`
+    + `<p:Assign.Value><p:InArgument x:TypeArguments="x:Object">[${className}.Load(tables)]</p:InArgument></p:Assign.Value>`
+    + `</p:Assign>`
+    + `</scg:List>`
+    + `</ClipboardData.Data>`
+    + `<ClipboardData.Metadata>`
+    + `<scg:List x:TypeArguments="x:Object" Capacity="4">`
+    + `<scg:List x:TypeArguments="x:Object" Capacity="1">`
+    + `<x:Reference>${refId}</x:Reference>`
+    + `</scg:List></scg:List>`
+    + `</ClipboardData.Metadata>`
+    + `</ClipboardData>`;
 }
 
 function escapeXml(str) {
