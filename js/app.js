@@ -164,7 +164,104 @@ function getCellWithType(ws, rowIndex, colIndex) {
   }
 }
 
+// --- Class generator (issue #6) ---
+
 function onSheetsReady(sheets) {
-  // stub — class generator implemented in issue #6
-  console.info("onSheetsReady stub", sheets);
+  const output = generateCSharp(sheets);
+  document.getElementById("output").textContent = output;
+}
+
+function generateCSharp(sheets) {
+  const lines = [];
+
+  lines.push(`namespace ${config.namespace}`);
+  lines.push("{");
+
+  // Root aggregator
+  if (config.xmlDocComments) lines.push("    /// <summary>Root configuration object.</summary>");
+  lines.push(`    public class ${config.rootClassName}`);
+  lines.push("    {");
+  for (const sheet of sheets) {
+    const className = toClassName(sheet.name);
+    const propName  = toPascalCase(sheet.name);
+    lines.push(`        public ${className} ${propName} { get; set; } = new();`);
+  }
+  lines.push("    }");
+
+  // OrchestratorAsset helper — emit once if any asset sheet present
+  const hasAssets = sheets.some((s) => s.schema === "asset");
+  if (hasAssets) {
+    lines.push("");
+    lines.push("    public class OrchestratorAsset");
+    lines.push("    {");
+    lines.push('        public string AssetName { get; set; } = "";');
+    lines.push('        public string Folder { get; set; } = "";');
+    lines.push("    }");
+  }
+
+  // One class per sheet
+  for (const sheet of sheets) {
+    lines.push("");
+    const className = toClassName(sheet.name);
+    lines.push(`    public class ${className}`);
+    lines.push("    {");
+
+    if (sheet.rows.length === 0) {
+      lines.push("        // No data rows found in source sheet.");
+    } else if (sheet.schema === "asset") {
+      for (const row of sheet.rows) {
+        if (config.xmlDocComments && row.description) {
+          lines.push(`        /// <summary>${escapeXml(row.description)}</summary>`);
+        }
+        const propName = toPascalCase(row.name);
+        lines.push(`        public OrchestratorAsset ${propName} { get; set; } = new();`);
+      }
+    } else {
+      for (const row of sheet.rows) {
+        if (config.xmlDocComments && row.description) {
+          lines.push(`        /// <summary>${escapeXml(row.description)}</summary>`);
+        }
+        const propName = toPascalCase(row.name);
+        const def      = defaultInitializer(row.csType);
+        lines.push(`        public ${row.csType} ${propName} { get; set; }${def};`);
+      }
+    }
+
+    lines.push("    }");
+  }
+
+  lines.push("}");
+  return lines.join("\n");
+}
+
+function toClassName(sheetName) {
+  return sheetName
+    .split(/[.\-_]/)
+    .map(toPascalCase)
+    .join("") + "Config";
+}
+
+function toPascalCase(str) {
+  return str
+    .replace(/[_\-]/g, " ")
+    .split(/[\s.]+/)
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join("");
+}
+
+function defaultInitializer(csType) {
+  switch (csType) {
+    case "string":   return ' = ""';
+    case "OrchestratorAsset": return " = new()";
+    default:         return "";
+  }
+}
+
+function escapeXml(str) {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
