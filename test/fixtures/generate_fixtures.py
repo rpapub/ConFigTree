@@ -121,8 +121,83 @@ def make_assets():
     print("Created Config_Assets.xlsx")
 
 
+# ---------------------------------------------------------------------------
+# Config_MultiSheet.xlsx — 5 sheets, tests dynamic sheet detection (#18)
+# ---------------------------------------------------------------------------
+def make_multi_sheet():
+    wb = openpyxl.Workbook()
+
+    ws_settings = wb.active
+    ws_settings.title = "Settings"
+    write_sheet(ws_settings, HEADER_STANDARD, [
+        ["OrchestratorQueueName", "MultiQueue", "Orchestrator queue name."],
+        ["MaxItemsPerRun",        50,            "Max items per run."],
+    ])
+
+    ws_constants = wb.create_sheet("Constants")
+    write_sheet(ws_constants, HEADER_STANDARD, [
+        ["MaxRetryNumber", 0, "Must be 0 when using Orchestrator queues."],
+    ])
+
+    ws_assets = wb.create_sheet("Assets")
+    write_sheet(ws_assets, HEADER_ASSET, [
+        ["CredentialSap", "cred_sap", "SAP", "SAP credential."],
+    ])
+
+    ws_env = wb.create_sheet("Environments")
+    write_sheet(ws_env, HEADER_STANDARD, [
+        ["BaseUrl",     "https://uat.example.com", "API base URL."],
+        ["Environment", "UAT",                     "Deployment environment."],
+        ["Timeout",     30,                        "HTTP timeout in seconds."],
+    ])
+
+    ws_features = wb.create_sheet("Features")
+    write_sheet(ws_features, HEADER_STANDARD, [
+        ["EnableNotifications", True,  "Send email notifications on completion."],
+        ["EnableDryRun",        False, "Skip writes when true."],
+        ["MaxParallelJobs",     4,     "Number of parallel job slots."],
+    ])
+
+    wb.save(OUTPUT_DIR / "Config_MultiSheet.xlsx")
+    print("Created Config_MultiSheet.xlsx")
+
+
+# ---------------------------------------------------------------------------
+# Config_CustomSheets.xlsx — no standard sheet names, tests mapper with any name
+# ---------------------------------------------------------------------------
+def make_custom_sheets():
+    wb = openpyxl.Workbook()
+
+    ws_db = wb.active
+    ws_db.title = "Database"
+    write_sheet(ws_db, HEADER_STANDARD, [
+        ["ConnectionString", "Server=db;Database=app;", "ADO.NET connection string."],
+        ["CommandTimeout",   30,                        "Query timeout in seconds."],
+        ["MaxPoolSize",      10,                        "Connection pool size."],
+    ])
+
+    ws_smtp = wb.create_sheet("Smtp")
+    write_sheet(ws_smtp, HEADER_STANDARD, [
+        ["Host",        "smtp.example.com", "SMTP server hostname."],
+        ["Port",        587,                "SMTP port."],
+        ["UseSsl",      True,               "Enable TLS."],
+        ["FromAddress", "bot@example.com",  "Sender address."],
+    ])
+
+    ws_creds = wb.create_sheet("Credentials")
+    write_sheet(ws_creds, HEADER_ASSET, [
+        ["SmtpCredential",   "cred_smtp",   "Shared", "SMTP login credential."],
+        ["DatabasePassword", "cred_db_pwd", "DB",     "Database user password."],
+    ])
+
+    wb.save(OUTPUT_DIR / "Config_CustomSheets.xlsx")
+    print("Created Config_CustomSheets.xlsx")
+
+
 if __name__ == "__main__":
     make_basic()
     make_types()
     make_assets()
+    make_multi_sheet()
+    make_custom_sheets()
     print("Done.")
