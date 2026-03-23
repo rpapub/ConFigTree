@@ -8,10 +8,13 @@
   <!-- Web Awesome -->
   <script src="https://kit.webawesome.com/9d55e66325f84b80.js" crossorigin="anonymous"></script>
 
-  <!-- @ltd/j-toml — pinned -->
-  <script src="https://cdn.jsdelivr.net/npm/@ltd/j-toml@1.38.0/j-toml.min.js"></script>
+  <!-- smol-toml — ESM, sets window.TOML = { parse } -->
+  <script type="module">
+    import { parse } from "https://esm.sh/smol-toml@1.3.4";
+    window.TOML = { parse };
+  </script>
 
-  <!-- js-yaml — pinned -->
+  <!-- js-yaml — pinned UMD, exposes window.jsyaml -->
   <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 
   <!-- SheetJS — pinned -->

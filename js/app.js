@@ -744,7 +744,8 @@ function xamlEnvelope(activities, refs, hasUi = false, hasSd = false) {
 // Section detection mirrors JSON: assetName+folder → asset, value key → standard, subtable → child.
 
 function parseToml(text) {
-  const doc = TOML.parse(text, { joiner: "\n", bigint: false });
+  if (typeof TOML === "undefined") throw new Error("TOML parser not loaded — check network.");
+  const doc = TOML.parse(text);
   return Object.entries(doc).map(([name, section]) => parseTomlNode(name, section));
 }
 
@@ -781,13 +782,12 @@ function inferTomlCsType(value) {
   if (typeof value === "boolean") return "bool";
   if (typeof value === "number")  return Number.isInteger(value) ? "int" : "double";
   if (value instanceof Date)      return inferDateCsType(value);
-  // j-toml exposes LocalDate/LocalTime/LocalDateTime as objects with toDate()
-  if (value && typeof value === "object" && typeof value.toDate === "function") {
-    const tag = value[Symbol.for("toml-type")] ?? "";
-    if (tag === "local-date")      return "DateOnly";
-    if (tag === "local-time")      return "TimeOnly";
-    if (tag === "local-date-time") return "DateTime";
-    return "DateTime";
+  // smol-toml exposes local date/time as objects with a type tag
+  if (value && typeof value === "object" && "type" in value) {
+    if (value.type === "local-date")      return "DateOnly";
+    if (value.type === "local-time")      return "TimeOnly";
+    if (value.type === "local-datetime")  return "DateTime";
+    if (value.type === "offset-datetime") return "DateTime";
   }
   return "string";
 }
