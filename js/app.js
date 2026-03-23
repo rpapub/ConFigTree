@@ -625,6 +625,71 @@ function generateXamlSnippet() {
     + `</ClipboardData>`;
 }
 
+// --- TOML input parser (#26) ---
+//
+// Uses @ltd/j-toml. Native TOML types map directly to C# types — no annotation needed.
+// Section detection mirrors JSON: assetName+folder → asset, value key → standard, subtable → child.
+
+function parseToml(text) {
+  const doc = TOML.parse(text, { joiner: "\n", bigint: false });
+  return Object.entries(doc).map(([name, section]) => parseTomlNode(name, section));
+}
+
+function parseTomlNode(name, obj) {
+  const properties = [];
+  const children   = [];
+
+  for (const [key, val] of Object.entries(obj)) {
+    if (val && typeof val === "object" && !Array.isArray(val) && "assetName" in val && "folder" in val) {
+      properties.push({
+        name:        key,
+        csType:      "OrchestratorAsset",
+        description: val.description ?? "",
+        isAsset:     true,
+        assetName:   val.assetName ?? "",
+        folder:      val.folder ?? "",
+      });
+    } else if (val && typeof val === "object" && !Array.isArray(val) && "value" in val) {
+      properties.push({
+        name:        key,
+        csType:      val.csType ?? inferTomlCsType(val.value),
+        description: val.description ?? "",
+        isAsset:     false,
+      });
+    } else if (val && typeof val === "object" && !Array.isArray(val)) {
+      children.push(parseTomlNode(key, val));
+    }
+  }
+
+  return { name, properties, children };
+}
+
+function inferTomlCsType(value) {
+  if (typeof value === "boolean") return "bool";
+  if (typeof value === "number")  return Number.isInteger(value) ? "int" : "double";
+  if (value instanceof Date)      return inferDateCsType(value);
+  // j-toml exposes LocalDate/LocalTime/LocalDateTime as objects with toDate()
+  if (value && typeof value === "object" && typeof value.toDate === "function") {
+    const tag = value[Symbol.for("toml-type")] ?? "";
+    if (tag === "local-date")      return "DateOnly";
+    if (tag === "local-time")      return "TimeOnly";
+    if (tag === "local-date-time") return "DateTime";
+    return "DateTime";
+  }
+  return "string";
+}
+
+// --- YAML input parser (#26) ---
+//
+// Uses js-yaml. YAML native types map to bool/int/float/Date.
+// Time-only strings need explicit csType annotation.
+
+function parseYaml(text) {
+  const doc = jsyaml.load(text);
+  return Object.entries(doc).map(([name, section]) => parseJsonNode(name, section));
+  // YAML scalars parse to the same JS types as JSON — reuse parseJsonNode + inferCsType
+}
+
 // --- JSON input parser (#25) ---
 //
 // Input format (see test/fixtures/Config_Basic.json):
