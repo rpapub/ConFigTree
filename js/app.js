@@ -49,17 +49,37 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function handleFile(file) {
-  // stub — implemented in issue #3
   const status  = document.getElementById("status-text");
   const spinner = document.getElementById("spinner");
 
   spinner.style.display = "inline-block";
   status.textContent = `Loading: ${file.name}`;
 
-  // Yield to browser to render spinner before synchronous work
-  setTimeout(() => {
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    try {
+      const workbook = XLSX.read(e.target.result, { type: "array", cellDates: true });
+      spinner.style.display = "none";
+      status.textContent = `Loaded: ${file.name} (${workbook.SheetNames.length} sheets: ${workbook.SheetNames.join(", ")})`;
+      console.info("Workbook loaded:", workbook.SheetNames);
+      onWorkbookLoaded(workbook);
+    } catch (err) {
+      spinner.style.display = "none";
+      status.textContent = `Error: ${err.message}`;
+      console.error("Failed to parse workbook:", err);
+    }
+  };
+
+  reader.onerror = () => {
     spinner.style.display = "none";
-    status.textContent = `Loaded: ${file.name}`;
-    console.info("handleFile stub — not yet implemented", file.name);
-  }, 0);
+    status.textContent = "Error: could not read file.";
+  };
+
+  reader.readAsArrayBuffer(file);
+}
+
+function onWorkbookLoaded(workbook) {
+  // stub — sheet mapping implemented in issue #4
+  console.info("onWorkbookLoaded stub", workbook.SheetNames);
 }
