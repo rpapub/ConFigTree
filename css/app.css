@@ -1,0 +1,158 @@
+/* Solarized palette */
+:root {
+  --sol-base03:  #002b36;
+  --sol-base02:  #073642;
+  --sol-base01:  #586e75;
+  --sol-base00:  #657b83;
+  --sol-base0:   #839496;
+  --sol-base1:   #93a1a1;
+  --sol-base2:   #eee8d5;
+  --sol-base3:   #fdf6e3;
+  --sol-yellow:  #b58900;
+  --sol-orange:  #cb4b16;
+  --sol-red:     #dc322f;
+  --sol-magenta: #d33682;
+  --sol-violet:  #6c71c4;
+  --sol-blue:    #268bd2;
+  --sol-cyan:    #2aa198;
+  --sol-green:   #859900;
+}
+
+/* Web Awesome token overrides — Solarized dark */
+:root {
+  color-scheme: dark;
+
+  --wa-color-neutral-0:    var(--sol-base03);
+  --wa-color-neutral-50:   var(--sol-base02);
+  --wa-color-neutral-100:  var(--sol-base01);
+  --wa-color-neutral-200:  var(--sol-base00);
+  --wa-color-neutral-300:  var(--sol-base0);
+  --wa-color-neutral-400:  var(--sol-base1);
+  --wa-color-neutral-500:  var(--sol-base1);
+  --wa-color-neutral-600:  var(--sol-base2);
+  --wa-color-neutral-700:  var(--sol-base2);
+  --wa-color-neutral-800:  var(--sol-base3);
+  --wa-color-neutral-900:  var(--sol-base3);
+  --wa-color-neutral-950:  var(--sol-base3);
+  --wa-color-neutral-1000: var(--sol-base3);
+
+  --wa-color-primary-600:  var(--sol-blue);
+  --wa-color-primary-500:  var(--sol-cyan);
+}
+
+/* Layout */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: var(--sol-base03);
+  color: var(--sol-base0);
+  font-family: monospace;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  padding: 0.5rem 1rem;
+  background-color: var(--sol-base02);
+  border-bottom: 1px solid var(--sol-base01);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--sol-base1);
+  letter-spacing: 0.05em;
+}
+
+#settings-bar {
+  padding: 0.5rem 1rem;
+  background-color: var(--sol-base02);
+  border-bottom: 1px solid var(--sol-base01);
+  font-size: 0.85rem;
+  color: var(--sol-base01);
+}
+
+#settings-bar summary {
+  cursor: pointer;
+  color: var(--sol-base00);
+}
+
+#split {
+  flex: 1;
+  min-height: 0;
+  --divider-width: 4px;
+}
+
+.panel {
+  padding: 1rem;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--sol-base01);
+}
+
+/* Drop zone */
+#drop-zone {
+  border: 2px dashed var(--sol-base01);
+  border-radius: 4px;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--sol-base00);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+#drop-zone.dragover,
+#drop-zone:hover {
+  border-color: var(--sol-blue);
+  color: var(--sol-blue);
+}
+
+#drop-zone input[type="file"] {
+  display: none;
+}
+
+/* Output */
+#output {
+  flex: 1;
+  background-color: var(--sol-base02);
+  border: 1px solid var(--sol-base01);
+  border-radius: 4px;
+  padding: 0.75rem;
+  overflow: auto;
+  white-space: pre;
+  font-size: 0.85rem;
+  color: var(--sol-base0);
+  min-height: 4rem;
+}
+
+#copy-btn {
+  align-self: flex-start;
+}
+
+#status {
+  font-size: 0.8rem;
+  color: var(--sol-base01);
+  min-height: 1.2em;
+}

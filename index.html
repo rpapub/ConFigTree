@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ConFormMold</title>
+
+  <!-- Web Awesome -->
+  <script src="https://kit.webawesome.com/9d55e66325f84b80.js" crossorigin="anonymous"></script>
+
+  <!-- SheetJS — pinned -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+  <div id="app">
+
+    <header>
+      <h1>ConFormMold</h1>
+      <span style="color: var(--sol-base01); font-size: 0.8rem;">Excel → C# config class generator</span>
+    </header>
+
+    <details id="settings-bar">
+      <summary>Settings</summary>
+      <p style="margin: 0.5rem 0 0; color: var(--sol-base00);">
+        Namespace: <code>Cpmf.Config</code> &nbsp;|&nbsp;
+        Root class: <code>AppConfig</code> &nbsp;|&nbsp;
+        Target: <code>.NET 6</code> &nbsp;|&nbsp;
+        XML doc comments: <code>on</code>
+      </p>
+    </details>
+
+    <wa-split-panel id="split" position="40">
+      <div slot="start" class="panel">
+        <h2>Input</h2>
+
+        <label id="drop-zone">
+          <input type="file" id="file-input" accept=".xlsx" />
+          <wa-icon name="file-spreadsheet" style="font-size: 2rem; color: var(--sol-base01);"></wa-icon>
+          <p style="margin: 0.5rem 0 0;">Drop <code>.xlsx</code> here or click to browse</p>
+        </label>
+
+        <div id="status"></div>
+      </div>
+
+      <div slot="end" class="panel">
+        <h2>Output</h2>
+        <pre id="output"></pre>
+        <wa-button id="copy-btn" variant="neutral" size="small">
+          <wa-icon slot="prefix" name="copy"></wa-icon>
+          Copy
+        </wa-button>
+      </div>
+    </wa-split-panel>
+
+  </div>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
