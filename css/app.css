@@ -131,26 +131,6 @@ header h1 {
   color: var(--sol-base01);
 }
 
-/* Drop zone */
-#drop-zone {
-  border: 2px dashed var(--sol-base01);
-  border-radius: 4px;
-  padding: 2rem 1rem;
-  text-align: center;
-  color: var(--sol-base00);
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-#drop-zone.dragover,
-#drop-zone:hover {
-  border-color: var(--sol-blue);
-  color: var(--sol-blue);
-}
-
-#drop-zone input[type="file"] {
-  display: none;
-}
 
 /* Output */
 pre:has(#output) {
@@ -168,9 +148,6 @@ pre:has(#output) {
   background-color: var(--sol-base2) !important;
 }
 
-#copy-btn {
-  align-self: flex-start;
-}
 
 #status {
   font-size: 0.8rem;

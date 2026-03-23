@@ -59,14 +59,9 @@
       <div slot="start" class="panel">
         <h2>Input</h2>
 
-        <label id="drop-zone">
-          <input type="file" id="file-input" accept=".xlsx" />
-          <wa-icon name="file-spreadsheet" style="font-size: 2rem; color: var(--sol-base01);"></wa-icon>
-          <p style="margin: 0.5rem 0 0;">Drop <code>.xlsx</code> here or click to browse</p>
-        </label>
+        <wa-file-input id="file-input" accept=".xlsx"></wa-file-input>
 
         <div id="status">
-          <wa-spinner id="spinner" style="display:none;"></wa-spinner>
           <span id="status-text"></span>
         </div>
       </div>
@@ -74,10 +69,7 @@
       <div slot="end" class="panel">
         <div style="display:flex; align-items:center; justify-content:space-between;">
           <h2>Output</h2>
-          <wa-button id="copy-btn" variant="neutral" size="small">
-            <wa-icon slot="prefix" name="copy"></wa-icon>
-            Copy
-          </wa-button>
+          <wa-copy-button id="copy-btn" from="output"></wa-copy-button>
         </div>
         <pre><code id="output" class="language-csharp"></code></pre>
       </div>
