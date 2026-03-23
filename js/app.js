@@ -127,14 +127,12 @@ function handleFile(file) {
   reader.readAsArrayBuffer(file);
 }
 
-// --- Sheet mapper (issue #4) ---
-
-const HARDCODED_SHEETS = ["Settings", "Constants", "Assets"];
+// --- Sheet mapper (issue #4 / #18) ---
 
 let lastSheets = null;
 
 function onWorkbookLoaded(workbook) {
-  lastSheets = HARDCODED_SHEETS.map((name) => mapSheet(workbook, name));
+  lastSheets = workbook.SheetNames.map((name) => mapSheet(workbook, name));
   console.info("Mapped sheets:", lastSheets);
   onSheetsReady(lastSheets);
 }
