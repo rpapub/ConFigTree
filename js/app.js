@@ -147,6 +147,7 @@ function getCellWithType(ws, rowIndex, colIndex) {
 
     case "d": {
       const d = cell.v;
+      console.debug("date cell", addr, "utc:", d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), d.getUTCHours(), d.getUTCMinutes(), "local:", d.getFullYear(), d.getMonth(), d.getDate(), d.getHours(), d.getMinutes());
       // SheetJS produces UTC-based Date objects — use UTC accessors throughout
       const isEpoch = d.getUTCFullYear() === 1899 && d.getUTCMonth() === 11 && d.getUTCDate() === 30;
       if (isEpoch) return { value: d, csType: "TimeOnly" };
