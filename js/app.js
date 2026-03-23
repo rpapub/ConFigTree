@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (fileInput.files[0]) handleFile(fileInput.files[0]);
   });
 
-  document.getElementById("copy-btn").addEventListener("wa-click", () => {
+  document.getElementById("copy-btn").addEventListener("click", () => {
     if (!lastOutput) return;
     navigator.clipboard.writeText(lastOutput).then(() => {
       status.textContent = "Copied to clipboard.";
@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  document.getElementById("regenerate-btn").addEventListener("wa-click", () => {
+  document.getElementById("regenerate-btn").addEventListener("click", () => {
     console.log("Regenerate clicked. lastSheets:", lastSheets);
     if (lastSheets) onSheetsReady(lastSheets);
     else console.warn("Regenerate: no sheets loaded yet.");
@@ -237,7 +237,7 @@ function onSheetsReady(sheets) {
   } else {
     console.error("highlight.js not loaded");
   }
-  document.getElementById("regenerate-btn").disabled = false;
+  document.getElementById("regenerate-btn").removeAttribute("disabled");
 }
 
 function generateCSharp(sheets) {
