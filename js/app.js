@@ -166,7 +166,10 @@ function onSheetsReady(sheets) {
   const el = document.getElementById("output");
   el.textContent = lastOutput;
   if (typeof hljs !== "undefined") {
-    requestAnimationFrame(() => hljs.highlightElement(el));
+    requestAnimationFrame(() => {
+      delete el.dataset.highlighted;
+      hljs.highlightElement(el);
+    });
   } else {
     console.error("highlight.js not loaded");
   }
