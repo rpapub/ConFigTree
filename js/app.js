@@ -73,6 +73,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   initSettings();
 
   const fileInput = document.getElementById("file-input");
+  fileInput.addEventListener("wa-invalid", () => {
+    document.getElementById("status-text").textContent = "Error: only .xlsx files are supported.";
+  });
   fileInput.addEventListener("change", () => {
     if (fileInput.files[0]) {
       handleFile(fileInput.files[0]);
