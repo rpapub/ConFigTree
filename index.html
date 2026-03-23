@@ -41,7 +41,10 @@
           <p style="margin: 0.5rem 0 0;">Drop <code>.xlsx</code> here or click to browse</p>
         </label>
 
-        <div id="status"></div>
+        <div id="status">
+          <wa-spinner id="spinner" style="display:none;"></wa-spinner>
+          <span id="status-text"></span>
+        </div>
       </div>
 
       <div slot="end" class="panel">

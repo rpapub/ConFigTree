@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const dropZone = document.getElementById("drop-zone");
   const fileInput = document.getElementById("file-input");
-  const status    = document.getElementById("status");
+  const status    = document.getElementById("status-text");
 
   dropZone.addEventListener("click", () => fileInput.click());
 
@@ -50,7 +50,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function handleFile(file) {
   // stub — implemented in issue #3
-  const status = document.getElementById("status");
-  status.textContent = `Loaded: ${file.name}`;
-  console.info("handleFile stub — not yet implemented", file.name);
+  const status  = document.getElementById("status-text");
+  const spinner = document.getElementById("spinner");
+
+  spinner.style.display = "inline-block";
+  status.textContent = `Loading: ${file.name}`;
+
+  // Yield to browser to render spinner before synchronous work
+  setTimeout(() => {
+    spinner.style.display = "none";
+    status.textContent = `Loaded: ${file.name}`;
+    console.info("handleFile stub — not yet implemented", file.name);
+  }, 0);
 }
