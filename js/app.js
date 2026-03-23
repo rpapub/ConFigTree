@@ -49,7 +49,6 @@ function initSettings() {
     el.addEventListener(event, () => {
       config[key] = def.type === "switch" ? el.checked : el.value;
       saveConfig();
-      if (lastSheets) onSheetsReady(lastSheets);
     });
   }
 }
