@@ -38,6 +38,10 @@
           <wa-input id="cfg-root-class" size="small" clearable></wa-input>
         </label>
         <label class="settings-field">
+          <span class="settings-label">Filename</span>
+          <wa-input id="cfg-filename" size="small" clearable></wa-input>
+        </label>
+        <label class="settings-field">
           <span class="settings-label">Target .NET</span>
           <wa-select id="cfg-dotnet-version" size="small" style="min-width:8rem;">
             <wa-option value="net6">.NET 6</wa-option>
@@ -69,7 +73,13 @@
       <div slot="end" class="panel">
         <div style="display:flex; align-items:center; justify-content:space-between;">
           <h2>Output</h2>
-          <wa-copy-button id="copy-btn" from="output"></wa-copy-button>
+          <div style="display:flex; gap:0.5rem; align-items:center;">
+            <wa-button id="download-btn" variant="neutral" size="small" disabled>
+              <wa-icon slot="start" name="download"></wa-icon>
+              Download
+            </wa-button>
+            <wa-copy-button id="copy-btn" from="output"></wa-copy-button>
+          </div>
         </div>
         <pre><code id="output" class="language-csharp"></code></pre>
       </div>

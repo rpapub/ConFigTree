@@ -6,6 +6,7 @@
 const CONFIG_DEFAULTS = {
   namespace:      { value: "Cpmf.Config", type: "text",   inputId: "cfg-namespace" },
   rootClassName:  { value: "AppConfig",   type: "text",   inputId: "cfg-root-class" },
+  outputFilename: { value: "Config",      type: "text",   inputId: "cfg-filename" },
   dotnetVersion:  { value: "net6",        type: "select", inputId: "cfg-dotnet-version" },
   xmlDocComments: { value: true,          type: "switch", inputId: "cfg-xml-docs" },
 };
@@ -80,11 +81,24 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("output").textContent = "";
       document.getElementById("status-text").textContent = "";
       document.getElementById("regenerate-btn").setAttribute("disabled", "");
+      document.getElementById("download-btn").setAttribute("disabled", "");
     }
   });
 
   document.getElementById("regenerate-btn").addEventListener("click", () => {
     if (lastSheets) onSheetsReady(lastSheets);
+  });
+
+  document.getElementById("download-btn").addEventListener("click", () => {
+    if (!lastOutput) return;
+    const filename = (config.outputFilename || "Config") + ".cs";
+    const blob = new Blob([lastOutput], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   });
 });
 
@@ -213,6 +227,7 @@ function onSheetsReady(sheets) {
     console.error("highlight.js not loaded");
   }
   document.getElementById("regenerate-btn").removeAttribute("disabled");
+  document.getElementById("download-btn").removeAttribute("disabled");
 }
 
 function generateCSharp(sheets) {
