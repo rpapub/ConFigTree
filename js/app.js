@@ -19,7 +19,7 @@ class CodeWriter {
 
 const CONFIG_DEFAULTS = {
   namespace:        { value: "Cpmf.Config", type: "text",   inputId: "cfg-namespace" },
-  rootClassName:    { value: "ConFigTree",  type: "text",   inputId: "cfg-root-class" },
+  rootClassName:    { value: "CodedConfig",  type: "text",   inputId: "cfg-root-class" },
   outputFilename:   { value: "Config",      type: "text",   inputId: "cfg-filename" },
   dotnetVersion:    { value: "net6",        type: "select", inputId: "cfg-dotnet-version" },
   xmlDocComments:   { value: true,  type: "switch", inputId: "cfg-xml-docs" },
@@ -696,8 +696,8 @@ function generateXamlSnippet() {
     return xamlEnvelope([xamlAssign("__ReferenceID0", varName, `${className}.Load(tables)`)], ["__ReferenceID0"]);
   }
 
-  // Full snippet: ReadRange per sheet + Load() Assign + ForEach per asset sheet
-  const acts = [];
+  // Full snippet: Sequence with variables + ReadRange + Load + ForEach per asset sheet
+  const innerActs = [];
   const refs = [];
   let   idx  = 0;
   const nextId = () => `__ReferenceID${idx++}`;
@@ -711,7 +711,7 @@ function generateXamlSnippet() {
   const readRanges = nodes.map((n, i) =>
     `<ui:ReadRange x:Name="${rangeIds[i]}" SheetName="${n.name}" DataTable="[dt_${toPascalCase(n.name)}]" AddHeaders="True" />`
   ).join("");
-  acts.push(
+  innerActs.push(
     `<ui:ExcelApplicationScope x:Name="${scopeId}" WorkbookPath="[in_ConfigFilePath]">`
     + `<ui:ExcelApplicationScope.Body><p:ActivityAction x:TypeArguments="x:Object">`
     + `<p:ActivityAction.Handler><p:Sequence>${readRanges}</p:Sequence></p:ActivityAction.Handler>`
@@ -724,7 +724,7 @@ function generateXamlSnippet() {
     .map((n) => `{"${n.name}", dt_${toPascalCase(n.name)}}`)
     .join(", ");
   const loadId = nextId();
-  acts.push(xamlAssign(loadId, varName,
+  innerActs.push(xamlAssign(loadId, varName,
     `${className}.Load(New Dictionary(Of String, DataTable) From {${dictEntries}})`
   ));
   refs.push(loadId);
@@ -733,7 +733,7 @@ function generateXamlSnippet() {
   for (const n of assetNodes) {
     const forId   = nextId();
     const catchId = nextId();
-    acts.push(
+    innerActs.push(
       `<p:ForEach x:Name="${forId}" x:TypeArguments="sd:DataRow" Values="[dt_${toPascalCase(n.name)}.AsEnumerable()]">`
       + `<p:ActivityAction x:TypeArguments="sd:DataRow">`
       + `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="sd:DataRow" Name="assetRow" /></p:ActivityAction.Argument>`
@@ -750,7 +750,22 @@ function generateXamlSnippet() {
     refs.push(forId, catchId);
   }
 
-  return xamlEnvelope(acts, refs, /* hasUi */ true, /* hasSd */ assetNodes.length > 0);
+  // Wrap in a Sequence that declares DataTable variables + out variable
+  // Variables are visible in Studio's Variables panel and can be promoted to arguments
+  const seqId   = nextId();
+  const dtVars  = nodes.map((n) =>
+    `<p:Variable x:TypeArguments="sd:DataTable" Name="dt_${toPascalCase(n.name)}" />`
+  ).join("");
+  const outVar  = `<p:Variable x:TypeArguments="x:Object" Name="${varName}" />`;
+  const sequence =
+    `<p:Sequence x:Name="${seqId}" DisplayName="${varName}" `
+    + `sap2010:Annotation.AnnotationText="${className} typed config loader — https://rpapub.github.io/ConFormMold/">`
+    + `<p:Sequence.Variables>${dtVars}${outVar}</p:Sequence.Variables>`
+    + innerActs.join("")
+    + `</p:Sequence>`;
+
+  refs.push(seqId);
+  return xamlEnvelope([sequence], refs, /* hasUi */ true, /* hasSd */ true);
 }
 
 function xamlAssign(id, to, value) {
