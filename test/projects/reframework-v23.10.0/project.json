@@ -1,5 +1,6 @@
 {
   "name": "UiPath_REFramework",
+  "projectId": "c49551c7-5b21-4044-b892-9dc3ed80b012",
   "description": "ConFormMold test fixture — REFramework v23.10.0 with typed ConFigTree integration",
   "main": "Main.xaml",
   "dependencies": {
@@ -20,6 +21,7 @@
     "isAttended": false,
     "requiresUserInteraction": true,
     "supportsPersistence": false,
+    "workflowSerialization": "DataContract",
     "excludedLoggedData": [
       "Private:*",
       "*password*"
@@ -34,7 +36,6 @@
     "projectProfile": "Developement",
     "outputType": "Process",
     "libraryOptions": {
-      "includeOriginalXaml": false,
       "privateWorkflows": []
     },
     "processOptions": {
@@ -76,9 +77,17 @@
         "testCaseId": "a3ae7ee1-032a-4fc8-8731-8a5b0b5f48bc",
         "testCaseType": "TestCase",
         "fileName": "Tests\\WorkflowTestCaseTemplate.xaml"
+      },
+      {
+        "editingStatus": "InProgress",
+        "testCaseId": "830529c3-ab31-42d2-98b5-2285c2df6c38",
+        "testCaseType": "TestCase",
+        "executionTemplateInvokeIsolated": false,
+        "fileName": "Tests\\TestCase_InitAllSettings.xaml"
       }
     ],
-    "modernBehavior": false
+    "modernBehavior": false,
+    "saveToCloud": false
   },
   "expressionLanguage": "VisualBasic",
   "entryPoints": [
