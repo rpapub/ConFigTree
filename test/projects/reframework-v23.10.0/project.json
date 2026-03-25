@@ -4,7 +4,6 @@
   "description": "ConFormMold test baseline — pristine REFramework v23.10.0 template",
   "main": "Main.xaml",
   "dependencies": {
-    "UiPath.CodedWorkflows": "[24.10.2]",
     "UiPath.Excel.Activities": "[2.16.0]",
     "UiPath.System.Activities": "[22.10.3]",
     "UiPath.Testing.Activities": "[22.10.0]",
