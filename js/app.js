@@ -25,9 +25,8 @@ const CONFIG_DEFAULTS = {
   xmlDocComments:   { value: true,  type: "switch", inputId: "cfg-xml-docs" },
   generateToString: { value: false, type: "switch", inputId: "cfg-tostring" },
   generateToJson:   { value: false, type: "switch", inputId: "cfg-tojson"    },
-  generatePristine:   { value: false,        type: "switch", inputId: "cfg-pristine"    },
-  generateLoader:     { value: false,        type: "switch", inputId: "cfg-loader"      },
-  uipathVariableName: { value: "ConFigTree", type: "text",   inputId: "cfg-uipath-var"  },
+  generatePristine: { value: false, type: "switch", inputId: "cfg-pristine"  },
+  generateLoader:   { value: false, type: "switch", inputId: "cfg-loader"    },
 };
 
 const STORAGE_KEY = "conformmold.config";
@@ -676,18 +675,20 @@ function defaultInitializer(csType) {
 function generateXamlSnippet() {
   const nodes     = lastSheets ?? [];
   const className = config.rootClassName || "AppConfig";
-  const varName   = config.uipathVariableName || "ConFigTree";
   const fmt       = lastSourceFormat ?? "xlsx";
 
   // Non-xlsx formats: simple Assign with the format-specific Load method
   if (fmt !== "xlsx") {
     const methodName = fmt === "json" ? "LoadJson" : fmt === "toml" ? "LoadToml" : "LoadYaml";
-    return xamlEnvelope([xamlAssign("__ReferenceID0", varName, `${className}.${methodName}(in_ConfigFilePath)`)], ["__ReferenceID0"]);
+    if (!config.generateLoader) {
+      return xamlEnvelope([xamlAssign("__ReferenceID0", "Config", `${className}.${methodName}(in_ConfigFilePath)`)], ["__ReferenceID0"]);
+    }
+    return xamlEnvelope([xamlAssign("__ReferenceID0", "Config", `${className}.${methodName}(in_ConfigFilePath)`)], ["__ReferenceID0"]);
   }
 
-  // xlsx: edge case — no sheets loaded yet
-  if (nodes.length === 0) {
-    return xamlEnvelope([xamlAssign("__ReferenceID0", varName, `${className}.Load(New Dictionary(Of String, DataTable) From {})`)], ["__ReferenceID0"]);
+  // xlsx without the loader toggle: minimal single Assign
+  if (!config.generateLoader || nodes.length === 0) {
+    return xamlEnvelope([xamlAssign("__ReferenceID0", "Config", `${className}.Load(tables)`)], ["__ReferenceID0"]);
   }
 
   // Full snippet: ReadRange per sheet + Load() Assign + ForEach per asset sheet
@@ -718,7 +719,7 @@ function generateXamlSnippet() {
     .map((n) => `{"${n.name}", dt_${toPascalCase(n.name)}}`)
     .join(", ");
   const loadId = nextId();
-  acts.push(xamlAssign(loadId, varName,
+  acts.push(xamlAssign(loadId, "Config",
     `${className}.Load(New Dictionary(Of String, DataTable) From {${dictEntries}})`
   ));
   refs.push(loadId);
