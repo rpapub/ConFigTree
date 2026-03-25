@@ -144,7 +144,16 @@
     </wa-split-panel>
 
   </div>
+  <footer style="text-align:right; padding:0.25rem 0.75rem; font-size:0.7rem; opacity:0.4;">
+    <span id="build-info"></span>
+  </footer>
 
   <script src="js/app.js" defer></script>
+  <script>
+    fetch("build.json").then(r => r.json()).then(b => {
+      const el = document.getElementById("build-info");
+      if (el) el.textContent = `${b.sha.slice(0,7)} · ${b.ts.slice(0,10)}`;
+    }).catch(() => {});
+  </script>
 </body>
 </html>
