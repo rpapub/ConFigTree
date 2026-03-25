@@ -88,6 +88,9 @@
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence DisplayName="TestCase_InitAllSettings" sap:VirtualizedContainerService.HintSize="577,989.6566666666666" sap2010:WorkflowViewState.IdRef="Sequence_1">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="cc:CodedConfig" Name="ConFigTree" />
+    </Sequence.Variables>
     <sap:WorkflowViewStateService.ViewState>
       <scg:Dictionary x:TypeArguments="x:String, x:Object">
         <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -101,9 +104,6 @@
       </sap:WorkflowViewStateService.ViewState>
     </Sequence>
     <Sequence DisplayName="... When" sap:VirtualizedContainerService.HintSize="537,229" sap2010:WorkflowViewState.IdRef="Sequence_3">
-      <Sequence.Variables>
-        <Variable x:TypeArguments="cc:CodedConfig" Name="ConFigTree" />
-      </Sequence.Variables>
       <sap:WorkflowViewStateService.ViewState>
         <scg:Dictionary x:TypeArguments="x:String, x:Object">
           <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -111,22 +111,14 @@
       </sap:WorkflowViewStateService.ViewState>
       <ui:InvokeWorkflowFile ArgumentsVariable="{x:Null}" ContinueOnError="{x:Null}" DisplayName="InitAllSettings - Invoke Workflow File (Framework\InitAllSettings.xaml)" sap:VirtualizedContainerService.HintSize="503,137" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="Framework\InitAllSettings.xaml">
         <ui:InvokeWorkflowFile.Arguments>
-          <InArgument x:TypeArguments="x:String" x:Key="in_ConfigFile">
-            <VisualBasicValue x:TypeArguments="x:String" ExpressionText="in_ConfigFile" />
-          </InArgument>
-          <InArgument x:TypeArguments="s:String[]" x:Key="in_ConfigSheets">
-            <VisualBasicValue x:TypeArguments="s:String[]" ExpressionText="in_ConfigSheets" />
-          </InArgument>
-          <OutArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)" x:Key="out_Config">
-            <VisualBasicReference x:TypeArguments="scg:Dictionary(x:String, x:Object)" ExpressionText="out_Config" />
-          </OutArgument>
-          <OutArgument x:TypeArguments="cc:CodedConfig" x:Key="out_ConFigTree">
-            <VisualBasicReference x:TypeArguments="cc:CodedConfig" ExpressionText="ConFigTree" />
-          </OutArgument>
+          <InArgument x:TypeArguments="x:String" x:Key="in_ConfigFile">[in_ConfigFile]</InArgument>
+          <InArgument x:TypeArguments="s:String[]" x:Key="in_ConfigSheets">[in_ConfigSheets]</InArgument>
+          <OutArgument x:TypeArguments="scg:Dictionary(x:String, x:Object)" x:Key="out_Config">[out_Config]</OutArgument>
+          <OutArgument x:TypeArguments="cc:CodedConfig" x:Key="out_ConFigTree">[ConFigTree]</OutArgument>
         </ui:InvokeWorkflowFile.Arguments>
       </ui:InvokeWorkflowFile>
     </Sequence>
-    <Sequence DisplayName="... Then" sap:VirtualizedContainerService.HintSize="537,48" sap2010:WorkflowViewState.IdRef="Sequence_4">
+    <Sequence DisplayName="... Then" sap:VirtualizedContainerService.HintSize="537,57" sap2010:WorkflowViewState.IdRef="Sequence_4">
       <sap:WorkflowViewStateService.ViewState>
         <scg:Dictionary x:TypeArguments="x:String, x:Object">
           <x:Boolean x:Key="IsExpanded">False</x:Boolean>
@@ -139,6 +131,21 @@
       <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="Settings: IsEnabled = True" Expression="[CBool(out_Config(&quot;IsEnabled&quot;)) = True]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_4" OutputMessageFormat="[&quot;actual: &quot; + CBool(out_Config(&quot;IsEnabled&quot;)).ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
       <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="Constants: MaxRetryNumber = 0" Expression="[CDbl(out_Config(&quot;MaxRetryNumber&quot;)) = 0]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_5" OutputMessageFormat="[&quot;actual: &quot; + CDbl(out_Config(&quot;MaxRetryNumber&quot;)).ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
       <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="Constants: StrictMode = False" Expression="[CBool(out_Config(&quot;StrictMode&quot;)) = False]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_6" OutputMessageFormat="[&quot;actual: &quot; + CBool(out_Config(&quot;StrictMode&quot;)).ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
+      <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="ConFigTree: object is not Nothing" Expression="[ConFigTree IsNot Nothing]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_7" OutputMessageFormat="[&quot;actual: &quot; + (ConFigTree IsNot Nothing).ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
+      <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="ConFigTree: type is CodedConfig" Expression="[ConFigTree.GetType().Name = &quot;CodedConfig&quot;]" sap:VirtualizedContainerService.HintSize="416,114" sap2010:WorkflowViewState.IdRef="VerifyExpression_8" OutputMessageFormat="[&quot;actual: &quot; + ConFigTree.GetType().Name]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
+    </Sequence>
+    <Sequence DisplayName="... Then (ConFigTree typed properties)" sap:VirtualizedContainerService.HintSize="537,48" sap2010:WorkflowViewState.IdRef="Sequence_5">
+      <sap:WorkflowViewStateService.ViewState>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+          <x:Boolean x:Key="IsExpanded">False</x:Boolean>
+          <x:Boolean x:Key="IsPinned">False</x:Boolean>
+        </scg:Dictionary>
+      </sap:WorkflowViewStateService.ViewState>
+      <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="ConFigTree.Settings.FeatureName = TypesDemo" Expression="[ConFigTree.Settings.FeatureName = &quot;TypesDemo&quot;]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_9" OutputMessageFormat="[&quot;actual: &quot; + ConFigTree.Settings.FeatureName]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
+      <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="ConFigTree.Settings.MaxItems = 42" Expression="[ConFigTree.Settings.MaxItems = 42]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_10" OutputMessageFormat="[&quot;actual: &quot; + ConFigTree.Settings.MaxItems.ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
+      <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="ConFigTree.Settings.IsEnabled = True" Expression="[ConFigTree.Settings.IsEnabled = True]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_11" OutputMessageFormat="[&quot;actual: &quot; + ConFigTree.Settings.IsEnabled.ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
+      <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="ConFigTree.Constants.MaxRetryNumber = 0" Expression="[ConFigTree.Constants.MaxRetryNumber = 0]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_12" OutputMessageFormat="[&quot;actual: &quot; + ConFigTree.Constants.MaxRetryNumber.ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
+      <uta:VerifyExpression AlternativeVerificationTitle="{x:Null}" KeepScreenshots="{x:Null}" Result="{x:Null}" ScreenshotsPath="{x:Null}" ContinueOnFailure="True" DisplayName="ConFigTree.Constants.StrictMode = False" Expression="[ConFigTree.Constants.StrictMode = False]" sap:VirtualizedContainerService.HintSize="416,123" sap2010:WorkflowViewState.IdRef="VerifyExpression_13" OutputMessageFormat="[&quot;actual: &quot; + ConFigTree.Constants.StrictMode.ToString()]" TakeScreenshotInCaseOfFailingAssertion="False" TakeScreenshotInCaseOfSucceedingAssertion="False" />
     </Sequence>
   </Sequence>
 </Activity>
