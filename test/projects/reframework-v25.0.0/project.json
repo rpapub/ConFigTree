@@ -44,9 +44,10 @@
     "fileInfoCollection": [
       {
         "editingStatus": "InProgress",
-        "testCaseId": "96f1a392-aa6c-4723-87af-3943538809e4",
+        "testCaseId": "8f72e993-fef7-4843-b96d-49ae36717275",
         "testCaseType": "TestCase",
-        "fileName": "Tests\\InitAllSettingsTestCase.xaml"
+        "executionTemplateInvokeIsolated": false,
+        "fileName": "Tests\\TestCase_InitAllSettings.xaml"
       }
     ],
     "modernBehavior": false,
