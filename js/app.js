@@ -27,7 +27,7 @@ const CONFIG_DEFAULTS = {
   generateToJson:   { value: false, type: "switch", inputId: "cfg-tojson"    },
   generatePristine: { value: false, type: "switch", inputId: "cfg-pristine"  },
   generateLoader:      { value: false,        type: "switch", inputId: "cfg-loader"     },
-  uipathVariableName:  { value: "ConFigTree", type: "text",   inputId: "cfg-uipath-var" },
+  uipathVariableName:  { value: "out_ConFigTree", type: "text",   inputId: "cfg-uipath-var" },
 };
 
 const STORAGE_KEY = "conformmold.config";
