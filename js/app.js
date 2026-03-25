@@ -722,7 +722,7 @@ function generateXamlSnippet() {
       forEach,
       xamlAssignTyped("x:Object", varName, "x:Object", `${className}.Load(dt_Tables)`, "Load ConFigTree"),
     ],
-    `${className} typed config loader — https://rpapub.github.io/ConFormMold/`
+    `${varName} typed config loader&#xD;&#xA;@see https://rpapub.github.io/ConFormMold/`
   );
 
   return xamlEnvelope([outerSeq], [outerSeqId], /* hasUi */ true, /* hasSd */ true);
