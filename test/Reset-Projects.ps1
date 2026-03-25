@@ -45,8 +45,7 @@ foreach ($v in $versions) {
         continue
     }
     if (-not (Test-Path $dst)) {
-        Write-Warning "Project not found: $dst — skipping"
-        continue
+        New-Item -ItemType Directory -Path $dst | Out-Null
     }
 
     Write-Host "`n==> Resetting $v" -ForegroundColor Cyan
@@ -83,7 +82,14 @@ foreach ($v in $versions) {
     $content = Get-Content $projectJson -Raw
     $content = $content -replace '(?<="name":\s*")[^"]*(?=")', $projectName
     Set-Content $projectJson $content -NoNewline
-    Write-Host "  name    => $projectName"
+
+    # Read back and verify
+    $actual = (Get-Content $projectJson -Raw | ConvertFrom-Json).name
+    if ($actual -ne $projectName) {
+        Write-Error "  name mismatch! expected '$projectName', got '$actual'"
+        exit 1
+    }
+    Write-Host "  name    => $actual (verified)"
 
     # Remove ConFigTree.cs — user regenerates this from the web app
     $csFile = Join-Path $dst "ConFigTree.cs"
@@ -96,3 +102,33 @@ foreach ($v in $versions) {
 }
 
 Write-Host "`nReset complete. Re-open projects in Studio and paste the ConFigTree snippet." -ForegroundColor Cyan
+
+# Commit via git — only tracked files, ignore Studio-generated dirs
+Write-Host "`nCommitting..." -ForegroundColor Cyan
+Push-Location (Split-Path $testRoot -Parent)
+try {
+    git add test/Reset-Projects.ps1
+    foreach ($v in $versions) {
+        $dst = Join-Path $projects $v
+        $trackedFiles = @(
+            "project.json",
+            "Framework/InitAllSettings.xaml",
+            "Tests/TestCase_InitAllSettings.xaml",
+            "Data/Config_Test.xlsx"
+        )
+        foreach ($f in $trackedFiles) {
+            $rel = "test/projects/$v/$f"
+            if (Test-Path (Join-Path $dst $f.Replace("/", "\"))) {
+                git add $rel
+            } else {
+                git rm --cached --ignore-unmatch $rel | Out-Null
+            }
+        }
+    }
+    git status --short
+    git commit -m "test: reset projects to clean slate via Reset-Projects.ps1`n`nCo-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+    git push
+    Write-Host "Pushed." -ForegroundColor Green
+} finally {
+    Pop-Location
+}
