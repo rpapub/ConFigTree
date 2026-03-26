@@ -137,8 +137,9 @@ const FORMAT_PARSERS = {
     read:  "binary",
     parse: (buf) => {
       const workbook = XLSX.read(buf, { type: "array", cellDates: true });
-      const nodes = workbook.SheetNames.map((name) => mapSheet(workbook, name));
-      return { nodes, label: `${workbook.SheetNames.length} sheets: ${workbook.SheetNames.join(", ")}`, sourceFormat: "xlsx" };
+      const visibleNames = workbook.SheetNames.filter((n) => !n.startsWith("."));
+      const nodes = visibleNames.map((name) => mapSheet(workbook, name));
+      return { nodes, label: `${visibleNames.length} sheets: ${visibleNames.join(", ")}`, sourceFormat: "xlsx" };
     },
   },
   ".json": {
@@ -216,7 +217,7 @@ let lastSourceFormat = null;
 
 function onWorkbookLoaded(workbook) {
   // Legacy entry point — still used by the xlsx branch in FORMAT_PARSERS
-  onNodesLoaded(workbook.SheetNames.map((name) => mapSheet(workbook, name)));
+  onNodesLoaded(workbook.SheetNames.filter((n) => !n.startsWith(".")).map((name) => mapSheet(workbook, name)));
 }
 
 function regenerateFromSelection() {
