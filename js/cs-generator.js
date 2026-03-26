@@ -318,6 +318,18 @@ function emitClass(w, node, sourceFormat = "xlsx") {
 
       w.dedent().write("}");
     }
+
+    // ToString() for sub-class — lists leaf properties so ConFigTree.ToString() is useful (#46)
+    if (config.generateToString && node.properties.length > 0) {
+      const className = toClassName(node.name);
+      const parts = node.properties.map(p => {
+        const pn = toPascalCase(p.name);
+        return `${pn}={${pn}}`;
+      }).join(", ");
+      w.blank();
+      w.write("public override string ToString() =>").indent();
+      w.write(`$"${className} {{ ${parts} }}";`).dedent();
+    }
   }
 
   w.dedent().write("}");
