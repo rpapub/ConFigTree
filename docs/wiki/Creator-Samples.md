@@ -5,7 +5,7 @@ DRAFT
 
 ## Sample Config.xlsx
 
-Link to samples/Config_Sample.xlsx in the repo.
+[Download Config_Reference.xlsx](https://github.com/rpapub/ConFigTree/raw/main/samples/Config_Reference.xlsx)
 Describe what makes it a good demo file — sheets, asset sheet,
 variety of types — so the creator can explain what the audience is seeing.
 

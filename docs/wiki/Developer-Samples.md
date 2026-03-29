@@ -5,7 +5,7 @@ DRAFT
 
 ## Sample Config.xlsx
 
-Link to samples/Config_Sample.xlsx in the repo.
+[Download Config_Reference.xlsx](https://github.com/rpapub/ConFigTree/raw/main/samples/Config_Reference.xlsx)
 Describe the sheets it contains and what each demonstrates.
 
 ## Sample UiPath Studio project
