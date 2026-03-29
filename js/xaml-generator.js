@@ -21,7 +21,7 @@ const XAML_CONFIGT_REF_TEMPLATE =
     `<p:Assign.To><p:OutArgument x:TypeArguments="scg:Dictionary(x:String, sd:DataTable)">[dt_Tables]</p:OutArgument></p:Assign.To>` +
     `<p:Assign.Value><p:InArgument x:TypeArguments="scg:Dictionary(x:String, sd:DataTable)">[New Dictionary(Of String, DataTable)]</p:InArgument></p:Assign.Value>` +
   `</p:Assign>` +
-  `<ui:ForEach x:TypeArguments="x:String" CurrentIndex="{x:Null}" DisplayName="For each sheet — ReadRange into dt_Tables" Values="[in_ConfigSheets]">` +
+  `<ui:ForEach x:TypeArguments="x:String" CurrentIndex="{x:Null}" DisplayName="For each sheet — ReadRange into dt_Tables" Values="[New String() {{{CONFIG_SHEETS}}}]">` +
     `<ui:ForEach.Body><p:ActivityAction x:TypeArguments="x:String">` +
       `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="x:String" Name="Sheet" /></p:ActivityAction.Argument>` +
       `<p:Sequence DisplayName="Read sheet into dt_Tables">` +
@@ -67,9 +67,15 @@ function generateXamlSnippet(nodes = []) {
     .filter(n => n.isAssetSheet && n.properties.length > 0)
     .map(n => n.name);
 
+  const configSheetNames = (nodes || [])
+    .filter(n => !n.isAssetSheet)
+    .map(n => `&quot;${n.name}&quot;`)
+    .join(", ");
+
   let body = XAML_CONFIGT_REF_TEMPLATE
     .replaceAll("{{CLASSNAME}}", className)
-    .replaceAll("{{VARNAME}}", varName);
+    .replaceAll("{{VARNAME}}", varName)
+    .replaceAll("{{CONFIG_SHEETS}}", configSheetNames);
 
   if (assetSheetNames.length > 0) {
     const namesExpr = assetSheetNames.map(n => `&quot;${n}&quot;`).join(", ");

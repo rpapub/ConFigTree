@@ -1,2 +1,12 @@
 node_modules/
 package-lock.json
+
+# UiPath Studio build artifacts
+test/projects/**/.local/
+test/projects/**/.objects/
+test/projects/**/.codedworkflows/
+test/projects/**/.settings/
+test/projects/**/.tmh/
+test/projects/**/entry-points.json
+test/projects/**/project.uiproj
+test/projects/**/.project/
