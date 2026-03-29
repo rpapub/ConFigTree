@@ -1,42 +1,132 @@
 # Getting Started
 
-<!--
-DRAFT
+ConFigTree turns a Config.xlsx into a typed C# class and a ready-to-paste XAML snippet for UiPath Studio. No installation. No build step on your machine. Open the browser tool, drop the file, paste into Studio.
 
--->
+This page walks through the complete path — from the browser to a running REFramework project.
 
-ConFigTree runs entirely in the browser — no installation required.
+---
 
-## 1. Open the tool
+## What you need
 
-Navigate to [configtree.cprima.net](https://configtree.cprima.net/).
+- A REFramework project open in UiPath Studio (2023.10.12 or later)
+- Your project's `Config.xlsx` (or the sample from [[Sample Files|Developer-Samples]])
+- The `UiPath.CodedWorkflows` package available on your feed
 
-## 2. Load a file
+---
 
-Drop an `.xlsx`, `.json`, `.toml`, or `.yaml` file onto the drop zone, or click **Browse or drop file** to open the file picker.
+## 1. Generate the class and snippet
 
-For Excel files, each visible sheet (sheets whose name does not start with `.`) becomes a config section.
+Open [configtree.cprima.net](https://configtree.cprima.net/) and drop your `Config.xlsx` onto the drop zone.
 
-## 3. Configure settings
+<!-- SCREENSHOT: Drop zone with Config.xlsx loaded — sheet checkboxes visible, C# tab active -->
 
-Use the settings sidebar to set:
+The **C# class** tab shows the generated `.cs` file. Scan it to confirm the class name, namespace, and properties look right. This is the file that will be compiled into your project.
 
-- **Namespace** — the C# namespace for the generated class
-- **Root class** — the name of the top-level config class
-- **Filename** — the output filename (without extension)
-- **Target .NET** — .NET 6 or .NET 8
+Switch to the **XAML snippet** tab.
 
-Toggle features (XML docs, Loader, ToString, etc.) as needed.
+<!-- SCREENSHOT: XAML snippet tab active — snippet visible in the code panel -->
 
-## 4. Generate
+If you want a different variable name than `out_ConFigTree`, change **Variable name** in the UiPath section of the sidebar now — the snippet updates immediately.
 
-Click **Regenerate** or change any setting to update the output.
+Click **Copy**.
 
-The **C# class** tab shows the generated `.cs` file. The **XAML snippet** tab shows the UiPath Studio clipboard snippet.
+---
 
-## 5. Copy or download
+## 2. Download the C# file
 
-- **Copy** — copies the active tab's content to the clipboard
-- **Download** — saves the file (`.cs` or `.xaml` depending on the active tab)
+Switch back to the **C# class** tab and click **Download**. Save the file as `Config.cs` (or the filename shown in Settings) into your REFramework project's `Lib/` folder.
 
-See [[XAML Snippet|XAML-Snippet]] for how to paste into UiPath Studio.
+<!-- SCREENSHOT: C# tab with Download button highlighted — filename shown in sidebar -->
+
+> **`Lib/` is a convention, not a requirement.** Studio picks up `.cs` files from anywhere inside the project folder — the root, a `Lib/` subfolder, a `CodedWorkflows/` subfolder, wherever makes sense for your project structure. Drop the file wherever your team keeps shared code.
+
+---
+
+## 3. Add the UiPath.CodedWorkflows dependency
+
+In Studio, open **Manage Packages** and install `UiPath.CodedWorkflows` from the official feed.
+
+<!-- SCREENSHOT: Manage Packages — UiPath.CodedWorkflows selected and installed -->
+
+This package enables coded workflows and is required for the C# class to compile inside the Studio project.
+
+> ConFigTree is known to work with UiPath Studio **2023.10.12 and later**. Earlier patch releases in the 2023.10 line may not behave correctly.
+
+---
+
+## 4. Import the namespace
+
+Open the **Imports** panel in Studio and add the namespace from your generated class — by default `Cpmf.Config`.
+
+<!-- SCREENSHOT: Imports panel — Cpmf.Config added to the list -->
+
+Importing the namespace also pulls in the assembly reference. Studio resolves the class from `Config.cs` in `Lib/`.
+
+---
+
+## 5. Paste the snippet into InitAllSettings
+
+Open `Framework/InitAllSettings.xaml`. Scroll to the bottom of the sequence, click after the last activity to place the cursor there, then press **Ctrl+V**.
+
+<!-- SCREENSHOT: InitAllSettings.xaml after paste — Load ConFigTree Assign activity visible at the bottom of the sequence -->
+
+The pasted activities include:
+- A `ForEach` loop that reads each config sheet into a `Dictionary<string, DataTable>`
+- An `Assign` that calls `CodedConfig.Load(dt_Tables)` and stores the result in `out_ConFigTree`
+- (If your config has asset sheets) A `ForEach` over `GetAllAssets()` with one `GetRobotAsset` call per asset
+
+---
+
+## 6. Convert the variable to an argument
+
+The pasted snippet introduces a local variable `out_ConFigTree` typed as `Object`. You need to promote it to an `Out` argument so it flows back to the caller.
+
+In the **Variables** panel, right-click `out_ConFigTree` and choose **Convert to Argument**.
+
+<!-- SCREENSHOT: Variables panel — right-click context menu with "Convert to Argument" highlighted -->
+
+Studio creates the argument but gets two things wrong:
+- Direction is set to `In` — change it to **Out**
+- Type is set to `Object` — change it to **CodedConfig** (select from the `Cpmf.Config` namespace)
+
+<!-- SCREENSHOT: Arguments panel — out_ConFigTree with Direction=Out and Type=CodedConfig -->
+
+> **Why Studio does this**: "Convert to Argument" always creates `InArgument(Object)` regardless of the variable's inferred type. This is a known Studio behaviour — the correction is manual and takes about ten seconds.
+
+---
+
+## 7. Wire up the argument in the calling workflow
+
+Right-click `InitAllSettings.xaml` in the Project panel and choose **Find References**. This shows every workflow that invokes it — typically `Main.xaml` and `Process.xaml`.
+
+For each reference:
+
+1. Open the calling workflow
+2. Create a variable of type `CodedConfig` (from `Cpmf.Config`) — for example `v_ConFigTree` in `Main.xaml`
+3. Import the `Cpmf.Config` namespace in that workflow's Imports panel
+4. On the `InvokeWorkflowFile` activity for `InitAllSettings`, open **Import Arguments** and map `out_ConFigTree` → `v_ConFigTree`
+
+<!-- SCREENSHOT: Main.xaml — InvokeWorkflowFile for InitAllSettings with Import Arguments open, out_ConFigTree mapped to v_ConFigTree -->
+
+To pass the loaded config into `Process.xaml`, add an `In` argument of type `CodedConfig` to `Process.xaml` and map it from the `InvokeWorkflowFile` in `Main.xaml`.
+
+<!-- SCREENSHOT: Process.xaml arguments panel — in_ConFigTree argument of type CodedConfig -->
+
+---
+
+## 8. Verify Project
+
+Press **Ctrl+Shift+E** (or click **Verify Project** in the ribbon). A clean verification with no errors confirms the integration is complete.
+
+<!-- SCREENSHOT: Verification panel showing no errors -->
+
+If you see errors at this stage, see [[Troubleshooting]].
+
+---
+
+## What's next
+
+- [[Config.xlsx and Beyond|Excel-Format]] — sheet types, column formats, dot-prefix exclusions
+- [[Coded, and Typed|Coded-and-Typed]] — why a typed class is better than the Config dictionary
+- [[The Dual Way|The-Dual-Way]] — keep the old `out_Config` dictionary alongside `out_ConFigTree` during migration
+- [[Settings and Opinionated|Configuration]] — all sidebar settings and feature toggles

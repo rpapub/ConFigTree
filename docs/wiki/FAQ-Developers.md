@@ -63,6 +63,8 @@ Q: Does ConFigTree handle Orchestrator Assets?
 
 Q: What is the XAML clipboard format and why does it use that mechanism?
 
+A: When you copy activities inside UiPath Studio, Studio puts them on the clipboard as XAML — the same XML format that `.xaml` workflow files use internally. Studio reads that format back on paste, reconstructing the activities exactly. ConFigTree generates a snippet in that same format, so pasting it into Studio is indistinguishable from pasting something you copied from another workflow. No Studio extension, no file import, no plugin — just Ctrl+C in the browser and Ctrl+V in Studio. The mechanism is not a hack; it is the documented way to programmatically author Studio workflows without the Studio API.
+
 Q: What happens if a sheet has headers but no data rows?
 
 Q: Can I use the generated C# class outside of UiPath?
@@ -70,5 +72,13 @@ Q: Can I use the generated C# class outside of UiPath?
 Q: How do I contribute — add a format parser, fix a bug, open a PR?
 
 Q: What is the ValueType column in an asset sheet?
+
+Q: Why is there no support for Windows-Legacy projects?
+
+A: Coded source files — `.cs` files compiled inside a UiPath project — only work in the **Windows** and **Cross-platform** targets. The **Windows-Legacy** target runs on .NET Framework 4.6.1, which predates the coded workflows feature entirely. UiPath never backported coded workflow support to Legacy, and ConFigTree depends on it. If your project is on Windows-Legacy, the path forward is to migrate the project to the Windows target first, then add ConFigTree.
+
+Q: Why does the Namespace setting matter — can I use any name?
+
+A: C# identifiers must start with a letter or underscore, not a digit or special character. A namespace like `1stProject.Config` or `My-Project.Config` is a compile error. UiPath project names often contain characters that are illegal in C# — spaces, hyphens, leading digits. The Namespace setting lets you enter a clean C# name regardless of what the project folder is called. The default `Cpmf.Config` is safe. If you change it, use only letters, digits (not first), dots, and underscores. Studio will show a compile error immediately if the name is invalid, so the mistake is caught early.
 
 -->
