@@ -14,12 +14,12 @@ namespace Cpmf.Config
         public EnvironmentsConfig Environments { get; set; } = new();
         public FeaturesConfig Features { get; set; } = new();
         public AssetsConfig Assets { get; set; } = new();
-        public CredentialsConfig Credentials { get; set; } = new();
+        public ConnectionsConfig Connections { get; set; } = new();
         public override string ToString() =>
-            $"CodedConfig {{ Settings={Settings}, Constants={Constants}, Environments={Environments}, Features={Features}, Assets={Assets}, Credentials={Credentials} }}";
+            $"CodedConfig {{ Settings={Settings}, Constants={Constants}, Environments={Environments}, Features={Features}, Assets={Assets}, Connections={Connections} }}";
 
         public IReadOnlyList<IOrchestratorAsset> AllAssets =>
-            new IOrchestratorAsset[] { Assets.QueueName, Assets.MaxItems, Assets.StrictFlag, Assets.ApiKey, Assets.GenericValue, Credentials.CredentialSap, Credentials.CredentialM365, Credentials.CredentialFtp };
+            new IOrchestratorAsset[] { Assets.QueueName, Assets.MaxItemsPerRun, Assets.StrictMode, Assets.GenericValue, Connections.ApiEndpoint, Connections.BaseUrl, Connections.OrchestratorFolder };
 
         public static CodedConfig Load(Dictionary<string, DataTable> tables)
         {
@@ -29,7 +29,7 @@ namespace Cpmf.Config
             if (tables.TryGetValue("Environments", out var t_Environments)) cfg.Environments = EnvironmentsConfig.FromDataTable(t_Environments);
             if (tables.TryGetValue("Features", out var t_Features)) cfg.Features = FeaturesConfig.FromDataTable(t_Features);
             if (tables.TryGetValue("Assets", out var t_Assets)) cfg.Assets = AssetsConfig.FromDataTable(t_Assets);
-            if (tables.TryGetValue("Credentials", out var t_Credentials)) cfg.Credentials = CredentialsConfig.FromDataTable(t_Credentials);
+            if (tables.TryGetValue("Connections", out var t_Connections)) cfg.Connections = ConnectionsConfig.FromDataTable(t_Connections);
             return cfg;
         }
     }
@@ -229,12 +229,10 @@ namespace Cpmf.Config
     {
         /// <summary>Input queue name.</summary>
         public OrchestratorAsset<string> QueueName { get; set; } = new();
-        /// <summary>Upper bound for items.</summary>
-        public OrchestratorAsset<int> MaxItems { get; set; } = new();
+        /// <summary>Maximum items to process.</summary>
+        public OrchestratorAsset<int> MaxItemsPerRun { get; set; } = new();
         /// <summary>Strict processing toggle.</summary>
-        public OrchestratorAsset<bool> StrictFlag { get; set; } = new();
-        /// <summary>REST API key.</summary>
-        public OrchestratorAsset<string> ApiKey { get; set; } = new();
+        public OrchestratorAsset<bool> StrictMode { get; set; } = new();
         /// <summary>Untyped fallback asset.</summary>
         public OrchestratorAsset<object> GenericValue { get; set; } = new();
 
@@ -251,17 +249,13 @@ namespace Cpmf.Config
                         cfg.QueueName.AssetName = row[1]?.ToString()?.Trim() ?? "";
                         cfg.QueueName.Folder    = row[2]?.ToString()?.Trim() ?? "";
                         break;
-                    case "MaxItems":
-                        cfg.MaxItems.AssetName = row[1]?.ToString()?.Trim() ?? "";
-                        cfg.MaxItems.Folder    = row[2]?.ToString()?.Trim() ?? "";
+                    case "MaxItemsPerRun":
+                        cfg.MaxItemsPerRun.AssetName = row[1]?.ToString()?.Trim() ?? "";
+                        cfg.MaxItemsPerRun.Folder    = row[2]?.ToString()?.Trim() ?? "";
                         break;
-                    case "StrictFlag":
-                        cfg.StrictFlag.AssetName = row[1]?.ToString()?.Trim() ?? "";
-                        cfg.StrictFlag.Folder    = row[2]?.ToString()?.Trim() ?? "";
-                        break;
-                    case "ApiKey":
-                        cfg.ApiKey.AssetName = row[1]?.ToString()?.Trim() ?? "";
-                        cfg.ApiKey.Folder    = row[2]?.ToString()?.Trim() ?? "";
+                    case "StrictMode":
+                        cfg.StrictMode.AssetName = row[1]?.ToString()?.Trim() ?? "";
+                        cfg.StrictMode.Folder    = row[2]?.ToString()?.Trim() ?? "";
                         break;
                     case "GenericValue":
                         cfg.GenericValue.AssetName = row[1]?.ToString()?.Trim() ?? "";
@@ -273,38 +267,38 @@ namespace Cpmf.Config
         }
 
         public override string ToString() =>
-            $"AssetsConfig {{ QueueName={QueueName}, MaxItems={MaxItems}, StrictFlag={StrictFlag}, ApiKey={ApiKey}, GenericValue={GenericValue} }}";
+            $"AssetsConfig {{ QueueName={QueueName}, MaxItemsPerRun={MaxItemsPerRun}, StrictMode={StrictMode}, GenericValue={GenericValue} }}";
     }
 
-    public class CredentialsConfig
+    public class ConnectionsConfig
     {
-        /// <summary>SAP system credential.</summary>
-        public OrchestratorAsset<object> CredentialSap { get; set; } = new();
-        /// <summary>Microsoft 365 credential.</summary>
-        public OrchestratorAsset<object> CredentialM365 { get; set; } = new();
-        /// <summary>FTP server credential.</summary>
-        public OrchestratorAsset<object> CredentialFtp { get; set; } = new();
+        /// <summary>REST API endpoint URL.</summary>
+        public OrchestratorAsset<string> ApiEndpoint { get; set; } = new();
+        /// <summary>Service base URL.</summary>
+        public OrchestratorAsset<string> BaseUrl { get; set; } = new();
+        /// <summary>Orchestrator folder path.</summary>
+        public OrchestratorAsset<string> OrchestratorFolder { get; set; } = new();
 
-        public static CredentialsConfig FromDataTable(DataTable dt)
+        public static ConnectionsConfig FromDataTable(DataTable dt)
         {
-            var cfg = new CredentialsConfig();
+            var cfg = new ConnectionsConfig();
             foreach (DataRow row in dt.Rows)
             {
                 var key   = row[0]?.ToString()?.Trim();
                 var value = row[1]?.ToString()?.Trim() ?? "";
                 switch (key)
                 {
-                    case "CredentialSap":
-                        cfg.CredentialSap.AssetName = row[1]?.ToString()?.Trim() ?? "";
-                        cfg.CredentialSap.Folder    = row[2]?.ToString()?.Trim() ?? "";
+                    case "ApiEndpoint":
+                        cfg.ApiEndpoint.AssetName = row[1]?.ToString()?.Trim() ?? "";
+                        cfg.ApiEndpoint.Folder    = row[2]?.ToString()?.Trim() ?? "";
                         break;
-                    case "CredentialM365":
-                        cfg.CredentialM365.AssetName = row[1]?.ToString()?.Trim() ?? "";
-                        cfg.CredentialM365.Folder    = row[2]?.ToString()?.Trim() ?? "";
+                    case "BaseUrl":
+                        cfg.BaseUrl.AssetName = row[1]?.ToString()?.Trim() ?? "";
+                        cfg.BaseUrl.Folder    = row[2]?.ToString()?.Trim() ?? "";
                         break;
-                    case "CredentialFtp":
-                        cfg.CredentialFtp.AssetName = row[1]?.ToString()?.Trim() ?? "";
-                        cfg.CredentialFtp.Folder    = row[2]?.ToString()?.Trim() ?? "";
+                    case "OrchestratorFolder":
+                        cfg.OrchestratorFolder.AssetName = row[1]?.ToString()?.Trim() ?? "";
+                        cfg.OrchestratorFolder.Folder    = row[2]?.ToString()?.Trim() ?? "";
                         break;
                 }
             }
@@ -312,7 +306,7 @@ namespace Cpmf.Config
         }
 
         public override string ToString() =>
-            $"CredentialsConfig {{ CredentialSap={CredentialSap}, CredentialM365={CredentialM365}, CredentialFtp={CredentialFtp} }}";
+            $"ConnectionsConfig {{ ApiEndpoint={ApiEndpoint}, BaseUrl={BaseUrl}, OrchestratorFolder={OrchestratorFolder} }}";
     }
 
     public interface IOrchestratorAsset

@@ -348,20 +348,19 @@ def make_reference():
 
     ws_assets = wb.create_sheet("Assets")
     write_sheet(ws_assets, HEADER_ASSET_TYPED, [
-        # Name              Asset name                        Folder              Description                      ValueType
-        ["QueueName",       "everything_queue_name",          "ConFigTree/Test",  "Input queue name.",             "string"],
-        ["MaxItems",        "everything_max_items",           "ConFigTree/Test",  "Upper bound for items.",        "int"],
-        ["StrictFlag",      "everything_strict_flag",         "ConFigTree/Test",  "Strict processing toggle.",     "bool"],
-        ["ApiKey",          "everything_api_key",             "ConFigTree/Test",  "REST API key.",                 "string"],
-        ["GenericValue",    "everything_generic_value",       "ConFigTree/Test",  "Untyped fallback asset.",       None],
+        # Name              Asset name (Orchestrator)      Folder       Description                      ValueType
+        ["QueueName",       "cfgtree_queue_name",          "CPMForge",  "Input queue name.",             "string"],
+        ["MaxItemsPerRun",  "cfgtree_max_items_per_run",   "CPMForge",  "Maximum items to process.",     "int"],
+        ["StrictMode",      "cfgtree_strict_mode",         "CPMForge",  "Strict processing toggle.",     "bool"],
+        ["GenericValue",    "cfgtree_generic_value",       "CPMForge",  "Untyped fallback asset.",       None],
     ])
 
-    ws_credentials = wb.create_sheet("Credentials")
-    write_sheet(ws_credentials, HEADER_ASSET, [
-        # Name              Asset name                        Folder              Description
-        ["CredentialSap",   "everything_cred_sap",            "ConFigTree/Test",  "SAP system credential."],
-        ["CredentialM365",  "everything_cred_m365",           "ConFigTree/Test",  "Microsoft 365 credential."],
-        ["CredentialFtp",   "everything_cred_ftp",            "ConFigTree/Test",  "FTP server credential."],
+    ws_connections = wb.create_sheet("Connections")
+    write_sheet(ws_connections, HEADER_ASSET_TYPED, [
+        # Name                  Asset name (Orchestrator)      Folder       Description                       ValueType
+        ["ApiEndpoint",         "cfgtree_api_endpoint",        "CPMForge",  "REST API endpoint URL.",          "string"],
+        ["BaseUrl",             "cfgtree_base_url",            "CPMForge",  "Service base URL.",               "string"],
+        ["OrchestratorFolder",  "cfgtree_orch_folder",         "CPMForge",  "Orchestrator folder path.",       "string"],
     ])
 
     # --- Hidden sheets (dot-prefixed, excluded from code generation) ---
@@ -380,8 +379,8 @@ def make_reference():
         ["Constants",     "REFramework required — must always be present."],
         ["Environments",  "Extra config sheet example."],
         ["Features",      "Extra config sheet example."],
-        ["Assets",        "5-column format with optional ValueType column."],
-        ["Credentials",   "4-column classic format — all properties typed as object."],
+        ["Assets",        "5-column typed asset sheet — process runtime values."],
+        ["Connections",   "5-column typed asset sheet — endpoint/URL values."],
         [".Meta",         "Hidden — excluded from code generation (dot prefix)."],
         [".Notes",        "Hidden — excluded from code generation (dot prefix)."],
     ])
