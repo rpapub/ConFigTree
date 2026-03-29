@@ -302,10 +302,20 @@ def make_typed_assets():
 def make_reference():
     wb = openpyxl.Workbook()
 
+    # --- Hidden sheets first (dot-prefixed, excluded from code generation) ---
+
+    ws_meta = wb.active
+    ws_meta.title = ".Meta"
+    write_sheet(ws_meta, ["Key", "Value"], [
+        ["Author",        "ConFigTree"],
+        ["Version",       "1.0.0"],
+        ["Description",   "Documentation master fixture — all types, all sheet kinds."],
+        ["GeneratedBy",   "generate_fixtures.py"],
+    ])
+
     # --- Config sheets ---
 
-    ws_settings = wb.active
-    ws_settings.title = "Settings"
+    ws_settings = wb.create_sheet("Settings")
     write_sheet(ws_settings, HEADER_STANDARD, [
         ["OrchestratorQueueName",  "everything_input_queue",            "string — Orchestrator input queue name."],
         ["MaxItemsPerRun",         100,                                  "int — Maximum items to process per run."],
@@ -363,15 +373,7 @@ def make_reference():
         ["OrchestratorFolder",  "cfgtree_orch_folder",         "CPMForge",  "Orchestrator folder path.",       "string"],
     ])
 
-    # --- Hidden sheets (dot-prefixed, excluded from code generation) ---
-
-    ws_meta = wb.create_sheet(".Meta")
-    write_sheet(ws_meta, ["Key", "Value"], [
-        ["Author",        "ConFigTree"],
-        ["Version",       "1.0.0"],
-        ["Description",   "Documentation master fixture — all types, all sheet kinds."],
-        ["GeneratedBy",   "generate_fixtures.py"],
-    ])
+    # --- Hidden sheet: .Notes ---
 
     ws_notes = wb.create_sheet(".Notes")
     write_sheet(ws_notes, ["Section", "Note"], [
