@@ -88,7 +88,7 @@ function generateXamlSnippet(nodes = []) {
 // No hardcoded property paths; C# handles all type logic through the interface.
 function xamlAllAssetsLoop(varName, ns) {
   const iface = `${ns}.IOrchestratorAsset`;
-  return `<ui:ForEach x:TypeArguments="x:Object" CurrentIndex="{x:Null}" DisplayName="For each asset — fetch from Orchestrator" Values="[${varName}.AllAssets]">`
+  return `<ui:ForEach x:TypeArguments="x:Object" CurrentIndex="{x:Null}" DisplayName="For each asset — fetch from Orchestrator" Values="[${varName}.GetAllAssets()]">`
     + `<ui:ForEach.Body><p:ActivityAction x:TypeArguments="x:Object">`
     + `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="x:Object" Name="assetItem" /></p:ActivityAction.Argument>`
     + `<p:TryCatch DisplayName="Get asset">`

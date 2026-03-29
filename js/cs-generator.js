@@ -63,8 +63,7 @@ function generateCSharp(nodes, sourceFormat = "xlsx") {
   if (assetPaths.length > 0) {
     const items = assetPaths.join(", ");
     w.blank();
-    w.write("[System.Text.Json.Serialization.JsonIgnore]");
-    w.write("public IReadOnlyList<IOrchestratorAsset> AllAssets =>");
+    w.write("public IReadOnlyList<IOrchestratorAsset> GetAllAssets() =>");
     w.indent().write(`new IOrchestratorAsset[] { ${items} };`).dedent();
   }
 

@@ -14,8 +14,7 @@ namespace Cpmf.Config
         public override string ToString() =>
             $"CodedConfig {{ Assets={Assets}, Endpoints={Endpoints} }}";
 
-        [System.Text.Json.Serialization.JsonIgnore]
-        public IReadOnlyList<IOrchestratorAsset> AllAssets =>
+        public IReadOnlyList<IOrchestratorAsset> GetAllAssets() =>
             new IOrchestratorAsset[] { Assets.QueueName, Assets.MaxItemsPerRun, Assets.StrictMode, Assets.ApiEndpoint, Assets.GenericValue, Endpoints.BaseUrl, Endpoints.OrchestratorFolder };
 
         public static CodedConfig Load(Dictionary<string, DataTable> tables)
