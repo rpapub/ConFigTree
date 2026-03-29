@@ -62,68 +62,55 @@ function generateXamlSnippet(nodes = []) {
     );
   }
 
-  // xlsx + loader: substitute tokens into verbatim template (fixes #44)
-  const assetSheetNames = (nodes || [])
-    .filter(n => n.isAssetSheet && n.properties.length > 0)
-    .map(n => n.name);
-
-  const configSheetNames = (nodes || [])
-    .filter(n => !n.isAssetSheet)
+  // All sheets (config + asset) go into dt_Tables so Load() populates
+  // OrchestratorAsset.AssetName and .Folder from the asset sheet rows.
+  const allSheetNames = (nodes || [])
     .map(n => `&quot;${n.name}&quot;`)
     .join(", ");
+
+  const hasAssets = (nodes || []).some(n => n.properties.some(p => p.isAsset));
 
   let body = XAML_CONFIGT_REF_TEMPLATE
     .replaceAll("{{CLASSNAME}}", className)
     .replaceAll("{{VARNAME}}", varName)
-    .replaceAll("{{CONFIG_SHEETS}}", configSheetNames);
+    .replaceAll("{{CONFIG_SHEETS}}", allSheetNames);
 
-  if (assetSheetNames.length > 0) {
-    const namesExpr = assetSheetNames.map(n => `&quot;${n}&quot;`).join(", ");
-    const assetLoop = xamlAssetLoop(namesExpr);
-    // Insert before closing </p:Sequence>
-    body = body.slice(0, -"</p:Sequence>".length) + assetLoop + "</p:Sequence>";
+  if (hasAssets) {
+    const ns = config.namespace || "App.Config";
+    body = body.slice(0, -"</p:Sequence>".length) + xamlAllAssetsLoop(varName, ns) + "</p:Sequence>";
   }
 
-  return xamlEnvelope([body], ["__ReferenceID0"], /* hasUi */ true, /* hasSd */ true, /* hasS */ assetSheetNames.length > 0);
+  return xamlEnvelope([body], ["__ReferenceID0"], /* hasUi */ true, /* hasSd */ true, /* hasS */ hasAssets);
 }
 
-function xamlAssetLoop(namesExpr) {
-  return `<ui:ForEach x:TypeArguments="x:String" CurrentIndex="{x:Null}" DisplayName="For each asset sheet — load assets" Values="[New String() {${namesExpr}}]">`
-    + `<ui:ForEach.Body><p:ActivityAction x:TypeArguments="x:String">`
-    + `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="x:String" Name="assetSheet" /></p:ActivityAction.Argument>`
-    + `<p:TryCatch DisplayName="Load asset sheet">`
+// Single ForEach over AllAssets — GetRobotAsset per item, assigns via IOrchestratorAsset.ValueAsObject.
+// CType cast used in every expression so Option Strict On (no late binding) is satisfied (#52).
+// No hardcoded property paths; C# handles all type logic through the interface.
+function xamlAllAssetsLoop(varName, ns) {
+  const iface = `${ns}.IOrchestratorAsset`;
+  return `<ui:ForEach x:TypeArguments="x:Object" CurrentIndex="{x:Null}" DisplayName="For each asset — fetch from Orchestrator" Values="[${varName}.AllAssets]">`
+    + `<ui:ForEach.Body><p:ActivityAction x:TypeArguments="x:Object">`
+    + `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="x:Object" Name="assetItem" /></p:ActivityAction.Argument>`
+    + `<p:TryCatch DisplayName="Get asset">`
     + `<p:TryCatch.Try>`
-    + `<p:Sequence DisplayName="Read and fetch assets">`
-    + `<p:Sequence.Variables><p:Variable x:TypeArguments="sd:DataTable" Name="dt_AssetSheet" /></p:Sequence.Variables>`
-    + `<ui:ReadRange Range="{x:Null}" AddHeaders="True" DataTable="[dt_AssetSheet]" SheetName="[assetSheet]" WorkbookPath="[in_ConfigFile]" />`
-    + `<ui:ForEachRow DataTable="[dt_AssetSheet]" DisplayName="For each asset row">`
-    + `<ui:ForEachRow.Body><p:ActivityAction x:TypeArguments="sd:DataRow">`
-    + `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="sd:DataRow" Name="assetRow" /></p:ActivityAction.Argument>`
-    + `<p:TryCatch DisplayName="Try get asset">`
-    + `<p:TryCatch.Try>`
-    + `<p:Sequence DisplayName="Get asset from Orchestrator">`
+    + `<p:Sequence DisplayName="Fetch asset from Orchestrator">`
     + `<p:Sequence.Variables><p:Variable x:TypeArguments="x:Object" Name="assetValue" /></p:Sequence.Variables>`
-    + `<ui:GetRobotAsset AssetName="[assetRow(&quot;Asset&quot;).ToString]" FolderPath="[assetRow(&quot;OrchestratorAssetFolder&quot;).ToString]" CacheStrategy="None" DisplayName="Get Orchestrator asset">`
+    + `<ui:GetRobotAsset AssetName="[CType(assetItem, ${iface}).AssetName]" FolderPath="[CType(assetItem, ${iface}).Folder]" CacheStrategy="None" DisplayName="Get Orchestrator asset">`
     + `<ui:GetRobotAsset.Value><p:OutArgument x:TypeArguments="x:Object">[assetValue]</p:OutArgument></ui:GetRobotAsset.Value>`
     + `</ui:GetRobotAsset>`
+    + `<p:Assign DisplayName="Assign asset value">`
+    + `<p:Assign.To><p:OutArgument x:TypeArguments="x:Object">[CType(assetItem, ${iface}).ValueAsObject]</p:OutArgument></p:Assign.To>`
+    + `<p:Assign.Value><p:InArgument x:TypeArguments="x:Object">[assetValue]</p:InArgument></p:Assign.Value>`
+    + `</p:Assign>`
     + `</p:Sequence>`
     + `</p:TryCatch.Try>`
     + `<p:TryCatch.Catches><p:Catch x:TypeArguments="s:Exception">`
     + `<p:ActivityAction x:TypeArguments="s:Exception">`
     + `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="s:Exception" Name="exception" /></p:ActivityAction.Argument>`
-    + `<p:Sequence DisplayName="Body" />`
-    + `</p:ActivityAction></p:Catch></p:TryCatch.Catches>`
+    + `<p:Sequence DisplayName="Body" /></p:ActivityAction></p:Catch></p:TryCatch.Catches>`
     + `</p:TryCatch>`
-    + `</p:ActivityAction></ui:ForEachRow.Body></ui:ForEachRow>`
-    + `</p:Sequence>`
-    + `</p:TryCatch.Try>`
-    + `<p:TryCatch.Catches><p:Catch x:TypeArguments="s:Exception">`
-    + `<p:ActivityAction x:TypeArguments="s:Exception">`
-    + `<p:ActivityAction.Argument><p:DelegateInArgument x:TypeArguments="s:Exception" Name="exception" /></p:ActivityAction.Argument>`
-    + `<p:Sequence DisplayName="Body" />`
-    + `</p:ActivityAction></p:Catch></p:TryCatch.Catches>`
-    + `</p:TryCatch>`
-    + `</p:ActivityAction></ui:ForEach.Body></ui:ForEach>`;
+    + `</p:ActivityAction></ui:ForEach.Body>`
+    + `</ui:ForEach>`;
 }
 
 function xamlAssign(id, to, value) {

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 
@@ -11,6 +13,9 @@ namespace Cpmf.Config
         public AssetsConfig Assets { get; set; } = new();
         public override string ToString() =>
             $"CodedConfig {{ Settings={Settings}, Constants={Constants}, Assets={Assets} }}";
+
+        public IReadOnlyList<IOrchestratorAsset> AllAssets =>
+            new IOrchestratorAsset[] { Assets.CredentialM365, Assets.CredentialFtp };
 
         public static CodedConfig LoadJson(string filePath)
         {
@@ -61,10 +66,22 @@ namespace Cpmf.Config
             $"AssetsConfig {{ CredentialM365={CredentialM365}, CredentialFtp={CredentialFtp} }}";
     }
 
-    public class OrchestratorAsset<T>
+    public interface IOrchestratorAsset
+    {
+        string AssetName { get; }
+        string Folder { get; }
+        object? ValueAsObject { get; set; }
+    }
+
+    public class OrchestratorAsset<T> : IOrchestratorAsset
     {
         public string AssetName { get; set; } = "";
-        public string Folder { get; set; } = "";
-        public T Value { get; set; }
+        public string Folder    { get; set; } = "";
+        public T?     Value     { get; set; }
+        object? IOrchestratorAsset.ValueAsObject
+        {
+            get => Value;
+            set => Value = value is T v ? v : default;
+        }
     }
 }

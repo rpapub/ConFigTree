@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Data;
 using System.Collections.Generic;
@@ -11,6 +13,9 @@ namespace Cpmf.Config
         public EndpointsConfig Endpoints { get; set; } = new();
         public override string ToString() =>
             $"CodedConfig {{ Assets={Assets}, Endpoints={Endpoints} }}";
+
+        public IReadOnlyList<IOrchestratorAsset> AllAssets =>
+            new IOrchestratorAsset[] { Assets.QueueName, Assets.MaxItemsPerRun, Assets.StrictMode, Assets.ApiEndpoint, Assets.GenericValue, Endpoints.BaseUrl, Endpoints.OrchestratorFolder };
 
         public static CodedConfig Load(Dictionary<string, DataTable> tables)
         {
@@ -105,10 +110,22 @@ namespace Cpmf.Config
             $"EndpointsConfig {{ BaseUrl={BaseUrl}, OrchestratorFolder={OrchestratorFolder} }}";
     }
 
-    public class OrchestratorAsset<T>
+    public interface IOrchestratorAsset
+    {
+        string AssetName { get; }
+        string Folder { get; }
+        object? ValueAsObject { get; set; }
+    }
+
+    public class OrchestratorAsset<T> : IOrchestratorAsset
     {
         public string AssetName { get; set; } = "";
-        public string Folder { get; set; } = "";
-        public T Value { get; set; }
+        public string Folder    { get; set; } = "";
+        public T?     Value     { get; set; }
+        object? IOrchestratorAsset.ValueAsObject
+        {
+            get => Value;
+            set => Value = value is T v ? v : default;
+        }
     }
 }

@@ -17,6 +17,10 @@ class CodeWriter {
 function generateCSharp(nodes, sourceFormat = "xlsx") {
   const w = new CodeWriter();
 
+  // Nullable annotations context — required for T? Value on OrchestratorAsset<T> (#52)
+  w.write("#nullable enable");
+  w.blank();
+
   // Usings
   w.write("using System;");
   if (config.generateToJson)                                     w.write("using System.Text.Json;");
@@ -46,6 +50,21 @@ function generateCSharp(nodes, sourceFormat = "xlsx") {
 
   if (config.generateToJson) {
     w.write(`public string ToJson() => JsonSerializer.Serialize(this);`);
+  }
+
+  // AllAssets — flat list of every IOrchestratorAsset for XAML to iterate (#52)
+  const assetPaths = [];
+  for (const node of nodes) {
+    const nodeProp = toPascalCase(node.name);
+    for (const prop of node.properties) {
+      if (prop.isAsset) assetPaths.push(`${nodeProp}.${toPascalCase(prop.name)}`);
+    }
+  }
+  if (assetPaths.length > 0) {
+    const items = assetPaths.join(", ");
+    w.blank();
+    w.write("public IReadOnlyList<IOrchestratorAsset> AllAssets =>");
+    w.indent().write(`new IOrchestratorAsset[] { ${items} };`).dedent();
   }
 
   if (config.generateLoader) {
@@ -129,13 +148,25 @@ function generateCSharp(nodes, sourceFormat = "xlsx") {
     emitClass(w, node, sourceFormat);
   }
 
-  // OrchestratorAsset helper — supporting value type referenced by section classes
+  // IOrchestratorAsset + OrchestratorAsset<T> — XAML iterates AllAssets via interface (#52)
   if (nodes.some(nodeHasAssets)) {
     w.blank();
-    w.write("public class OrchestratorAsset<T>").write("{").indent();
+    w.write("public interface IOrchestratorAsset").write("{").indent();
+    w.write("string AssetName { get; }");
+    w.write("string Folder { get; }");
+    w.write("object? ValueAsObject { get; set; }");
+    w.dedent().write("}");
+
+    w.blank();
+    w.write("public class OrchestratorAsset<T> : IOrchestratorAsset").write("{").indent();
     w.write('public string AssetName { get; set; } = "";');
-    w.write('public string Folder { get; set; } = "";');
-    w.write("public T Value { get; set; }");
+    w.write('public string Folder    { get; set; } = "";');
+    w.write("public T?     Value     { get; set; }");
+    w.write("object? IOrchestratorAsset.ValueAsObject");
+    w.write("{").indent();
+    w.write("get => Value;");
+    w.write("set => Value = value is T v ? v : default;");
+    w.dedent().write("}");
     w.dedent().write("}");
   }
 

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Data;
 using System.Collections.Generic;
@@ -15,6 +17,9 @@ namespace Cpmf.Config
         public CredentialsConfig Credentials { get; set; } = new();
         public override string ToString() =>
             $"CodedConfig {{ Settings={Settings}, Constants={Constants}, Environments={Environments}, Features={Features}, Assets={Assets}, Credentials={Credentials} }}";
+
+        public IReadOnlyList<IOrchestratorAsset> AllAssets =>
+            new IOrchestratorAsset[] { Assets.QueueName, Assets.MaxItems, Assets.StrictFlag, Assets.ApiKey, Assets.GenericValue, Credentials.CredentialSap, Credentials.CredentialM365, Credentials.CredentialFtp };
 
         public static CodedConfig Load(Dictionary<string, DataTable> tables)
         {
@@ -310,10 +315,22 @@ namespace Cpmf.Config
             $"CredentialsConfig {{ CredentialSap={CredentialSap}, CredentialM365={CredentialM365}, CredentialFtp={CredentialFtp} }}";
     }
 
-    public class OrchestratorAsset<T>
+    public interface IOrchestratorAsset
+    {
+        string AssetName { get; }
+        string Folder { get; }
+        object? ValueAsObject { get; set; }
+    }
+
+    public class OrchestratorAsset<T> : IOrchestratorAsset
     {
         public string AssetName { get; set; } = "";
-        public string Folder { get; set; } = "";
-        public T Value { get; set; }
+        public string Folder    { get; set; } = "";
+        public T?     Value     { get; set; }
+        object? IOrchestratorAsset.ValueAsObject
+        {
+            get => Value;
+            set => Value = value is T v ? v : default;
+        }
     }
 }
