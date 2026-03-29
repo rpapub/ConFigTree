@@ -75,6 +75,10 @@ Q: What happens if a sheet has headers but no data rows?
 
 Q: Can I use the generated C# class outside of UiPath?
 
+Q: How do I get support?
+
+A: ConFigTree is open-source and support is provided on a best-effort basis via GitHub Issues. Open an issue at [github.com/rpapub/ConFigTree/issues](https://github.com/rpapub/ConFigTree/issues). Include the ConFigTree version (visible in the page footer), your UiPath Studio version, and a description of what you expected versus what happened. Attaching a minimal Config.xlsx that reproduces the problem speeds things up significantly.
+
 Q: How do I contribute — add a format parser, fix a bug, open a PR?
 
 Q: What is the ValueType column in an asset sheet?
