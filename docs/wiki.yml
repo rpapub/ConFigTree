@@ -2,70 +2,84 @@
 # This file is the source of truth for wiki structure, page metadata, and content status.
 # It does NOT get synced to the GitHub wiki — it lives in docs/wiki.yml.
 #
+# Two audience tracks: developer | content_creator
 # status values: stub | draft | review | complete
+#
+# arc_title: the narrative name of the stop (NOT the filename or heading)
+# file:       the actual wiki page filename
 
-sidebar:
-  - Home
-  - Getting-Started
-  - Excel-Format
-  - Configuration
-  - XAML-Snippet
-  - FAQ-Developers
-  - FAQ-Media
-
-pages:
-
-  - file: Home.md
-    title: ConFigTree
-    nav_label: Home
-    status: draft
-
-  - file: Getting-Started.md
-    title: Getting Started
-    nav_label: Getting Started
-    status: draft
-    issues:
-      - 41   # docs: document the ConFigTree DX integration steps for UiPath Studio
-    description: >
-      End-to-end walkthrough: open the tool, load a file, configure settings,
-      generate, copy or download.
-    outline:
-      - Open the tool
-      - Load a file (drag-and-drop vs browse)
-      - Configure settings (brief, link to Configuration page)
-      - Regenerate
-      - Copy / Download
-      - Next step: paste XAML into Studio (link to XAML-Snippet)
-
-  - file: Excel-Format.md
-    title: Excel Format
-    nav_label: Excel Format
-    status: draft
-
-  - file: Configuration.md
-    title: Configuration
-    nav_label: Configuration
-    status: draft
-
-  - file: XAML-Snippet.md
-    title: XAML Snippet
-    nav_label: XAML Snippet
-    status: draft
-    issues:
-      - 41   # docs: document the ConFigTree DX integration steps for UiPath Studio
-
-  - file: FAQ-Developers.md
-    title: "FAQ — Developers"
-    nav_label: "FAQ — Developers"
-    status: stub
-
-  - file: FAQ-Media.md
-    title: "FAQ — Media & Content Creators"
-    nav_label: "FAQ — Media & Content Creators"
-    status: stub
+# ── Special pages (not part of either arc) ────────────────────────
 
 special:
-
+  - file: Home.md
+    status: draft
   - file: _Sidebar.md
-
   - file: _Footer.md
+
+# ── Developer arc ─────────────────────────────────────────────────
+#
+# Narrative: zero → first output → understanding the tool → mastery → contribution
+# Target audience: UiPath RPA developers adopting ConFigTree in REFramework projects
+
+developer:
+
+  - arc_title: Getting Started
+    file: Getting-Started.md
+    status: draft
+    issues:
+      - 41   # docs: document the ConFigTree DX integration steps for UiPath Studio
+
+  - arc_title: Prerequisites
+    file: Prerequisites.md
+    status: stub
+
+  - arc_title: The Dual Way
+    file: The-Dual-Way.md
+    status: stub
+    note: >
+      Not a migration decision — a sign of mercy. Both the old Dict loader and the
+      new typed ConFigTree loader can coexist in InitAllSettings.xaml. The developer
+      retires out_Config references at their own pace. The page shows
+      InitAllSettings.xaml in all three states: before, during, and after.
+
+  - arc_title: Config.xlsx and Beyond
+    file: Excel-Format.md
+    status: draft
+
+  - arc_title: Coded, and Typed
+    file: Coded-and-Typed.md
+    status: stub
+
+  - arc_title: Settings and Opinionated
+    file: Configuration.md
+    status: draft
+
+  - arc_title: XAML Snippet
+    file: XAML-Snippet.md
+    status: draft
+
+  - arc_title: Troubleshooting
+    file: Troubleshooting.md
+    status: stub
+
+  - arc_title: Diagrams
+    file: Diagrams.md
+    status: stub
+    note: >
+      Visual summary of the full system. Belongs late in the arc — after the reader
+      has walked through all the parts, the diagram confirms their mental model.
+
+  - arc_title: FAQ — Developers
+    file: FAQ-Developers.md
+    status: stub
+
+# ── Content creator arc ───────────────────────────────────────────
+#
+# Narrative: what it is → why it matters → how to talk about it → how to demo it
+# Target audience: bloggers, YouTubers, RPA community presenters, media
+
+content_creators:
+
+  - arc_title: FAQ — Media & Content Creators
+    file: FAQ-Media.md
+    status: stub
