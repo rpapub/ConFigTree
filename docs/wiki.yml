@@ -22,13 +22,6 @@ pages:
     status: draft
     issues:
       - 64   # docs: wiki scaffolding
-    description: >
-      Landing page. One-paragraph pitch, quick-links to all other pages,
-      link to the live tool.
-    outline:
-      - What ConFigTree does (one sentence)
-      - Quick links table
-      - Live tool link
 
   - file: Getting-Started.md
     title: Getting Started
@@ -57,15 +50,6 @@ pages:
       - 58   # feat: optional DataType column in config sheets
       - 59   # fix: detect ValueType column by header name, not position
       - 60   # test: robustness when ValueType column present at generation but absent at runtime
-    description: >
-      Reference for the .xlsx input format — sheet naming rules,
-      config sheet columns, asset sheet columns, ValueType column.
-    outline:
-      - Sheet naming conventions (dot-prefix exclusion)
-      - Config sheet column reference (Name, Value, Type, Description)
-      - Asset sheet column reference (Name, Asset, Folder, Description, ValueType)
-      - ValueType mapping table (string/int/bool/object)
-      - Example workbook layout
 
   - file: Configuration.md
     title: Configuration
@@ -77,15 +61,6 @@ pages:
       - 39   # feat: add 'Clear local storage' button
       - 42   # feat: differentiate generated code by Target .NET version
       - 57   # feat: embed generator version in generated .cs header
-    description: >
-      Settings sidebar reference — every setting and feature toggle,
-      with default values and effect on generated output.
-    outline:
-      - Settings group (Namespace, Root class, Filename, Target .NET)
-      - Features group (XML docs, Loader, ToString, ToJson, IsPristine, Readonly)
-      - UiPath group (Variable name)
-      - localStorage persistence note
-      - Reset settings
 
   - file: XAML-Snippet.md
     title: XAML Snippet
@@ -96,15 +71,6 @@ pages:
       - 44   # bug: XAML clipboard paste fails (fixed)
       - 52   # feat: implement REFramework asset loading via GetRobotAsset
       - 54   # feat: typed asset values — OrchestratorAsset.Value concrete type
-    description: >
-      How to use the generated XAML clipboard snippet in UiPath Studio —
-      what it contains, how to paste it, Studio prerequisites.
-    outline:
-      - What the snippet contains (ForEach + Assign for xlsx; single Assign for others)
-      - Asset loading loop (GetRobotAsset per asset property)
-      - How to paste into Studio (Ctrl+V in InitAllSettings.xaml)
-      - Variable name setting
-      - Studio / REFramework prerequisites
 
   - file: Changelog.md
     title: Changelog
@@ -113,13 +79,6 @@ pages:
     issues:
       - 40   # feat: embed build number / commit SHA in deployed output
       - 57   # feat: embed generator version in generated .cs header
-    description: >
-      Release notes and version history, newest first.
-      Mirrors the highlights from git history.
-    outline:
-      - Unreleased section
-      - One dated section per release sprint
-      - Link to full commit history
 
   - file: FAQ-Developers.md
     title: "FAQ — Developers"
@@ -129,18 +88,6 @@ pages:
       - 55   # backlog: proper JS test framework
       - 56   # refactor: extract parsers into js/parsers.js
       - 64   # docs: wiki scaffolding
-    description: >
-      Frequently asked questions for developers contributing to or building on ConFigTree.
-    outline:
-      - General (what is it, where does it run)
-      - Running locally
-      - Code structure overview (parsers.js, cs-generator.js, xaml-generator.js, app.js)
-      - SchemaNode IR explained
-      - How to add a new input format
-      - How to add a new C# feature toggle
-      - Test suite status and how to run tests
-      - Architecture decisions (no build step, Web Awesome, XAML template approach)
-      - Deployment (GitHub Pages, build.json, wiki sync)
 
   - file: FAQ-Media.md
     title: "FAQ — Media & Content Creators"
@@ -148,25 +95,9 @@ pages:
     status: stub
     issues:
       - 64   # docs: wiki scaffolding
-    description: >
-      Frequently asked questions for bloggers, YouTubers, and RPA community
-      content creators covering ConFigTree.
-    outline:
-      - What is ConFigTree in one sentence
-      - What problem does it solve (the Dict pain point in REFramework)
-      - Who is the target audience (UiPath RPA developers)
-      - What input formats are supported
-      - Is it free / open source (MIT, GitHub)
-      - Does it require installation (no — browser-only)
-      - Key tagline and messaging ("Drop the Dict! Your Config deserves better.")
-      - Screenshot and asset availability
-      - How to link / cite the project
-      - Contact / maintainer info
 
 special:
 
   - file: _Sidebar.md
-    description: Navigation sidebar rendered on every wiki page. Generated from sidebar list above.
 
   - file: _Footer.md
-    description: Footer rendered on every wiki page. Contains links to the live tool, GitHub, issues.
