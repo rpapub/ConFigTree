@@ -249,13 +249,10 @@ function renderSheetSelection(nodes) {
     item.appendChild(label);
 
     if (node.isAssetSheet || node.properties.some((p) => p.isAsset)) {
-      cb.disabled = true;
-      cb.checked = false;
       const badge = document.createElement("wa-badge");
       badge.setAttribute("variant", "neutral");
       badge.setAttribute("pill", "");
       badge.textContent = "asset";
-      badge.title = "Asset loading not yet supported — see roadmap";
       item.appendChild(badge);
     }
 
