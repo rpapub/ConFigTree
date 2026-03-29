@@ -1,0 +1,104 @@
+# Wiki content plan for ConFigTree
+# This file is the source of truth for wiki structure, page metadata, and content status.
+# It does NOT get synced to the GitHub wiki — it lives in docs/wiki.yml.
+#
+# status values: stub | draft | review | complete
+
+sidebar:
+  - Home
+  - Getting-Started
+  - Excel-Format
+  - Configuration
+  - XAML-Snippet
+  - Changelog
+
+pages:
+
+  - file: Home.md
+    title: ConFigTree
+    nav_label: Home
+    status: draft
+    description: >
+      Landing page. One-paragraph pitch, quick-links to all other pages,
+      link to the live tool.
+    outline:
+      - What ConFigTree does (one sentence)
+      - Quick links table
+      - Live tool link
+
+  - file: Getting-Started.md
+    title: Getting Started
+    nav_label: Getting Started
+    status: draft
+    description: >
+      End-to-end walkthrough: open the tool, load a file, configure settings,
+      generate, copy or download.
+    outline:
+      - Open the tool
+      - Load a file (drag-and-drop vs browse)
+      - Configure settings (brief, link to Configuration page)
+      - Regenerate
+      - Copy / Download
+      - Next step: paste XAML into Studio (link to XAML-Snippet)
+
+  - file: Excel-Format.md
+    title: Excel Format
+    nav_label: Excel Format
+    status: draft
+    description: >
+      Reference for the .xlsx input format — sheet naming rules,
+      config sheet columns, asset sheet columns, ValueType column.
+    outline:
+      - Sheet naming conventions (dot-prefix exclusion)
+      - Config sheet column reference (Name, Value, Type, Description)
+      - Asset sheet column reference (Name, Asset, Folder, Description, ValueType)
+      - ValueType mapping table (string/int/bool/object)
+      - Example workbook layout
+
+  - file: Configuration.md
+    title: Configuration
+    nav_label: Configuration
+    status: draft
+    description: >
+      Settings sidebar reference — every setting and feature toggle,
+      with default values and effect on generated output.
+    outline:
+      - Settings group (Namespace, Root class, Filename, Target .NET)
+      - Features group (XML docs, Loader, ToString, ToJson, IsPristine, Readonly)
+      - UiPath group (Variable name)
+      - localStorage persistence note
+      - Reset settings
+
+  - file: XAML-Snippet.md
+    title: XAML Snippet
+    nav_label: XAML Snippet
+    status: draft
+    description: >
+      How to use the generated XAML clipboard snippet in UiPath Studio —
+      what it contains, how to paste it, Studio prerequisites.
+    outline:
+      - What the snippet contains (ForEach + Assign for xlsx; single Assign for others)
+      - Asset loading loop (GetRobotAsset per asset property)
+      - How to paste into Studio (Ctrl+V in InitAllSettings.xaml)
+      - Variable name setting
+      - Studio / REFramework prerequisites
+
+  - file: Changelog.md
+    title: Changelog
+    nav_label: Changelog
+    status: draft
+    description: >
+      Release notes and version history, newest first.
+      Mirrors the highlights from git history.
+    outline:
+      - Unreleased section
+      - One dated section per release sprint
+      - Link to full commit history
+
+special:
+
+  - file: _Sidebar.md
+    description: Navigation sidebar rendered on every wiki page. Generated from sidebar list above.
+
+  - file: _Footer.md
+    description: Footer rendered on every wiki page. Contains links to the live tool, GitHub, issues.
