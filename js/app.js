@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("regenerate-btn").setAttribute("disabled", "");
       document.getElementById("download-btn").setAttribute("disabled", "");
       document.getElementById("copy-btn").setAttribute("disabled", "");
-      document.getElementById("uipath-snippet").style.display = "none";
+      document.querySelector(".tab-btn[data-tab='xaml']").setAttribute("disabled", "");
       clearSheetSelection();
       clearWarnings();
     }
@@ -103,8 +103,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (lastSheets) regenerateFromSelection();
   });
 
+  // Tab switching
+  document.querySelectorAll(".tab-btn[data-tab]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (btn.disabled) return;
+      activeTab = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn[data-tab]").forEach(b => {
+        b.classList.toggle("active", b.dataset.tab === activeTab);
+        b.setAttribute("aria-selected", b.dataset.tab === activeTab);
+      });
+      document.querySelectorAll(".tab-panel[id^='tab-']").forEach(p => {
+        p.style.display = p.id === `tab-${activeTab}` ? "" : "none";
+      });
+    });
+  });
+
   document.getElementById("copy-btn").addEventListener("click", () => {
-    const text = document.getElementById("output").textContent;
+    const elId = activeTab === "xaml" ? "output-xaml" : "output";
+    const text = document.getElementById(elId).textContent;
     navigator.clipboard.writeText(text).then(() => {
       const btn = document.getElementById("copy-btn");
       const prev = btn.innerHTML;
@@ -113,24 +129,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  document.getElementById("xaml-copy-btn").addEventListener("click", () => {
-    navigator.clipboard.writeText(generateXamlSnippet(lastSheets || [])).then(() => {
-      const btn = document.getElementById("xaml-copy-btn");
-      btn.textContent = "Copied!";
-      setTimeout(() => { btn.innerHTML = '<wa-icon slot="start" name="clipboard"></wa-icon> Copy Assign'; }, 1500);
-    });
-  });
-
   document.getElementById("download-btn").addEventListener("click", () => {
-    if (!lastOutput) return;
-    const filename = (config.outputFilename || "Config") + ".cs";
-    const blob = new Blob([lastOutput], { type: "text/plain" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    if (activeTab === "xaml") {
+      if (!lastXaml) return;
+      const filename = (config.outputFilename || "Config") + ".xaml";
+      const blob = new Blob([lastXaml], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    } else {
+      if (!lastOutput) return;
+      const filename = (config.outputFilename || "Config") + ".cs";
+      const blob = new Blob([lastOutput], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
   });
 });
 
@@ -231,9 +247,12 @@ function regenerateFromSelection() {
   const sheets = selectedSheets();
   if (sheets.length === 0) {
     lastOutput = "";
+    lastXaml   = "";
     document.getElementById("output").textContent = "";
+    document.getElementById("output-xaml").textContent = "";
     document.getElementById("download-btn").setAttribute("disabled", "");
     document.getElementById("copy-btn").setAttribute("disabled", "");
+    document.querySelector(".tab-btn[data-tab='xaml']").setAttribute("disabled", "");
   } else {
     onSheetsReady(sheets);
   }
@@ -293,23 +312,37 @@ function clearWarnings() {
 }
 
 let lastOutput = "";
+let lastXaml   = "";
+let activeTab  = "cs";
 
 function onSheetsReady(sheets) {
   lastOutput = generateCSharp(sheets, lastSourceFormat);
-  const el = document.getElementById("output");
-  el.textContent = lastOutput;
+  lastXaml   = generateXamlSnippet(sheets);
+
+  const elCs = document.getElementById("output");
+  elCs.textContent = lastOutput;
   if (typeof hljs !== "undefined") {
     requestAnimationFrame(() => {
-      delete el.dataset.highlighted;
-      hljs.highlightElement(el);
+      delete elCs.dataset.highlighted;
+      hljs.highlightElement(elCs);
     });
   } else {
     console.error("highlight.js not loaded");
   }
+
+  const elXaml = document.getElementById("output-xaml");
+  elXaml.textContent = lastXaml;
+  if (typeof hljs !== "undefined") {
+    requestAnimationFrame(() => {
+      delete elXaml.dataset.highlighted;
+      hljs.highlightElement(elXaml);
+    });
+  }
+
   document.getElementById("regenerate-btn").removeAttribute("disabled");
   document.getElementById("download-btn").removeAttribute("disabled");
   document.getElementById("copy-btn").removeAttribute("disabled");
-  document.getElementById("uipath-snippet").style.display = "";
+  document.querySelector(".tab-btn[data-tab='xaml']").removeAttribute("disabled");
 }
 
 

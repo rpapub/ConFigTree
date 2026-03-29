@@ -322,7 +322,19 @@ wa-file-input:not(:state(blank))::part(dropzone) { display: none; }
   align-items: center;
 }
 
-pre:has(#output) {
+.tab-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tab-panel[style*="display:none"] {
+  display: none !important;
+}
+
+.output-pre {
   flex: 1 1 auto;
   margin: 0;
   overflow: auto;
@@ -330,37 +342,19 @@ pre:has(#output) {
   background-color: var(--sol-base2) !important;
 }
 
-#output {
+#output,
+#output-xaml {
   font-size: 0.85rem;
   background-color: var(--sol-base2) !important;
   display: block;
   min-height: 100%;
 }
 
-/* ── UiPath bar ───────────────────────────────────────────────── */
-
-.uipath-bar {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.3rem 0.75rem;
-  border-top: 1px solid var(--sol-base1);
-  background-color: var(--sol-base3);
-}
-
-.uipath-label {
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--sol-base01);
-  font-weight: bold;
-}
-
-.snippet-hint {
-  font-size: 0.75rem;
-  color: var(--sol-base1);
-  flex: 1;
+#tab-xaml .output-pre,
+#output-xaml {
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-x: hidden;
 }
 
 /* ── Footer ───────────────────────────────────────────────────── */

@@ -145,6 +145,7 @@
         <div class="output-header">
           <div class="tab-list" role="tablist">
             <button class="tab-btn active" data-tab="cs" role="tab" aria-selected="true">C# class</button>
+            <button class="tab-btn" data-tab="xaml" role="tab" aria-selected="false" disabled>XAML snippet</button>
           </div>
           <div class="output-actions">
             <wa-button id="download-btn" variant="neutral" size="small" disabled>
@@ -158,15 +159,11 @@
           </div>
         </div>
 
-        <pre><code id="output" class="language-csharp"></code></pre>
-
-        <div id="uipath-snippet" style="display:none;" class="uipath-bar">
-          <span class="uipath-label">UiPath</span>
-          <span class="snippet-hint">Paste into Studio with Ctrl+V</span>
-          <wa-button id="xaml-copy-btn" variant="neutral" size="small">
-            <wa-icon slot="start" name="clipboard" variant="regular"></wa-icon>
-            Copy Assign
-          </wa-button>
+        <div class="tab-panel" id="tab-cs">
+          <pre class="output-pre"><code id="output" class="language-csharp"></code></pre>
+        </div>
+        <div class="tab-panel" id="tab-xaml" style="display:none;">
+          <pre class="output-pre"><code id="output-xaml" class="language-xml"></code></pre>
         </div>
 
       </div>
