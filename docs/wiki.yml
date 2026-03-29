@@ -78,6 +78,13 @@ developer:
       Visual summary of the full system. Belongs late in the arc — after the reader
       has walked through all the parts, the diagram confirms their mental model.
 
+  - arc_title: Sample Files
+    file: Developer-Samples.md
+    status: stub
+    note: >
+      Requires samples/ directory in repo with Config_Sample.xlsx
+      and a pre-integrated REFramework Studio project.
+
   - arc_title: FAQ — Developers
     file: FAQ-Developers.md
     status: stub
@@ -104,6 +111,14 @@ content_creators:
   - arc_title: Assets
     file: Creator-Assets.md
     status: stub
+
+  - arc_title: Sample Files
+    file: Creator-Samples.md
+    status: stub
+    note: >
+      Same files as Developer-Samples but framed for demonstration:
+      xlsx shown in Excel first, Studio project pre-integrated and
+      ready to walk through on camera.
 
   - arc_title: Suggested Content Formats
     file: Creator-Content-Formats.md

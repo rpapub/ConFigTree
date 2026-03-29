@@ -13,6 +13,7 @@
 - [[XAML Snippet|XAML-Snippet]]
 - [[Troubleshooting]]
 - [[Diagrams]]
+- [[Sample Files|Developer-Samples]]
 - [[FAQ — Developers|FAQ-Developers]]
 
 ## For Content Creators
@@ -21,6 +22,7 @@
 - [[The Story|Creator-The-Story]]
 - [[Demo Guide|Creator-Demo-Guide]]
 - [[Assets|Creator-Assets]]
+- [[Sample Files|Creator-Samples]]
 - [[Suggested Content Formats|Creator-Content-Formats]]
 - [[How to Support|Creator-CTA]]
 - [[Roadmap for Creators|Creator-Roadmap]]
