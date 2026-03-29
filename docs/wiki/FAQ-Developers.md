@@ -81,4 +81,12 @@ Q: Why does the Namespace setting matter — can I use any name?
 
 A: C# identifiers must start with a letter or underscore, not a digit or special character. A namespace like `1stProject.Config` or `My-Project.Config` is a compile error. UiPath project names often contain characters that are illegal in C# — spaces, hyphens, leading digits. The Namespace setting lets you enter a clean C# name regardless of what the project folder is called. The default `Cpmf.Config` is safe. If you change it, use only letters, digits (not first), dots, and underscores. Studio will show a compile error immediately if the name is invalid, so the mistake is caught early.
 
+Q: How do I override or extend the generated code?
+
+A: The generated `.cs` file is a plain C# source file compiled inside the Studio project — nothing prevents you from editing it. The safe approach is to add a separate partial class file alongside it. For example, if the generated class is `CodedConfig`, create a `CodedConfig.Extensions.cs` in the same `Lib/` folder with `partial class CodedConfig { ... }` and add your custom methods or properties there. When you regenerate from an updated Config.xlsx, your extensions file is untouched. Avoid editing the generated file directly — it will be overwritten the next time you regenerate.
+
+Q: Is it safe to re-generate when changes happen during maintenance?
+
+A: Yes, with one condition: keep your customisations in a separate file (see above). The generated file is overwrite-safe — drop the new `.cs` into `Lib/` and Studio recompiles. Property names and types track the Config.xlsx exactly, so any drift between the spreadsheet and the code is caught immediately by Verify Project rather than surfacing at runtime. If a setting is renamed or removed in the xlsx, the generated class reflects that and Studio shows a compile error wherever the old name was referenced — which is the point: the error is at design time, not in production.
+
 -->
