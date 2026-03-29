@@ -11,6 +11,12 @@ Q: What is the Loader — what does it generate and when do I need it?
 
 Q: What is IsPristine?
 
+A: `IsPristine` is an optional property on the generated class that returns `true` when every config value still matches the default that was baked in at generation time — in other words, when nothing has been loaded yet, or when every loaded value happened to equal the default. Enable it via the **IsPristine** toggle in ConFigTree settings before generating.
+
+The primary use case is a post-load sanity check in `InitAllSettings.xaml`: after calling `CodedConfig.Load(dt_Tables)`, assert `out_ConFigTree.IsPristine = False`. If it is still `True`, the DataTable was empty or every value parsed to its default — treat this as an initialisation failure rather than letting the robot run with silent zeroes and empty strings.
+
+It is not a validation tool and does not catch wrong values — only missing or unparsed ones. A setting loaded as `0` because the xlsx contains `"zero"` (text that fails `int.TryParse`) looks identical to a setting that was never loaded.
+
 Q: How do I handle drift — the spreadsheet changed, what now?
 
 Q: Why use .xlsx as the primary input format?
