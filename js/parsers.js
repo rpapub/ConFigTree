@@ -23,6 +23,9 @@ function mapSheet(workbook, sheetName) {
   // Detect schema from header row: col B header "asset" → asset sheet
   const header = (raw[0] || []).map((h) => (h || "").toString().trim().toLowerCase());
   const isAssetSheet = header[1] === "asset";
+  const valueTypeColIdx = header.findIndex(
+    (h) => h != null && String(h).trim().toLowerCase() === "valuetype"
+  );
 
   const properties = [];
   for (let i = 1; i < raw.length; i++) {
@@ -31,7 +34,10 @@ function mapSheet(workbook, sheetName) {
     if (!name) continue;
 
     if (isAssetSheet) {
-      const rawType = row[4] != null ? String(row[4]).trim().toLowerCase() : "";
+      const rawType =
+        valueTypeColIdx >= 0 && row[valueTypeColIdx] != null
+          ? String(row[valueTypeColIdx]).trim().toLowerCase()
+          : "";
       const valueType = ["string", "int", "bool"].includes(rawType) ? rawType : "object";
       properties.push({
         name,

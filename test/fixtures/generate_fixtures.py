@@ -391,6 +391,33 @@ def make_reference():
     print("Created Config_Reference.xlsx")
 
 
+# ---------------------------------------------------------------------------
+# Config_ValueTypeOffset.xlsx — regression fixture for #59
+# ValueType column is in position 5 (0-indexed), NOT position 4.
+# An extra "Tags" column sits at position 4, so row[4] reads "Tags" values.
+# With the fix (header.findIndex), types are resolved correctly.
+# Without the fix (row[4]), all assets fall back to OrchestratorAsset<object>.
+# ---------------------------------------------------------------------------
+HEADER_ASSET_OFFSET = ["Name", "Asset", "OrchestratorAssetFolder", "Description", "Tags", "ValueType"]
+
+
+def make_valuetype_offset():
+    wb = openpyxl.Workbook()
+
+    ws_assets = wb.active
+    ws_assets.title = "Assets"
+    write_sheet(ws_assets, HEADER_ASSET_OFFSET, [
+        # Name           Asset name             Folder             Description          Tags        ValueType
+        ["QueueName",    "offset_queue",        "ConFigTree/Test", "Queue name.",       "required", "string"],
+        ["MaxItems",     "offset_max_items",    "ConFigTree/Test", "Upper bound.",      "required", "int"],
+        ["StrictMode",   "offset_strict_mode",  "ConFigTree/Test", "Enable strict.",    "optional", "bool"],
+        ["GenericValue", "offset_generic",      "ConFigTree/Test", "Untyped fallback.", "optional", None],
+    ])
+
+    wb.save(OUTPUT_DIR / "Config_ValueTypeOffset.xlsx")
+    print("Created Config_ValueTypeOffset.xlsx")
+
+
 if __name__ == "__main__":
     make_basic()
     make_types()
@@ -401,4 +428,5 @@ if __name__ == "__main__":
     make_config_test()
     make_typed_assets()
     make_reference()
+    make_valuetype_offset()
     print("Done.")

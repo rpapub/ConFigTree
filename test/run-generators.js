@@ -96,6 +96,19 @@ const formats = [
         .map(s => mapSheet(wb, s));
     },
   },
+  // Regression fixture for #59: ValueType column at position 5 (not 4).
+  // row[4] would read the "Tags" column; header.findIndex resolves it correctly.
+  {
+    name:        "Config_ValueTypeOffset.xlsx",
+    sourceFormat: "xlsx",
+    parse() {
+      const buf = fs.readFileSync(path.join(FIXTURES_DIR, "Config_ValueTypeOffset.xlsx"));
+      const wb  = XLSX.read(buf, { type: "buffer", cellDates: true });
+      return wb.SheetNames
+        .filter(s => !s.startsWith("."))
+        .map(s => mapSheet(wb, s));
+    },
+  },
   // Future entries:
   // { name: "Config_Basic.toml", sourceFormat: "toml", parse() { ... } },
   // { name: "Config_Basic.yaml", sourceFormat: "yaml", parse() { ... } },
