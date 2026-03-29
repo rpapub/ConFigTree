@@ -218,6 +218,7 @@ wa-page::part(main-content) {
 }
 
 #file-input:state(blank)::part(dropzone) {
+  display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -238,7 +239,9 @@ wa-page::part(main-content) {
 }
 
 .file-dropzone-content wa-icon {
-  font-size: 2rem;
+  font-size: 2.5rem;
+  display: block;
+  color: var(--sol-base01);
 }
 
 /* Compact once file is loaded: hide dropzone, toolbar shrinks back */
