@@ -279,6 +279,7 @@ function emitClass(w, node, sourceFormat = "xlsx") {
           } else if (prop.csType === "DateOnly") {
             w.write(`case "${prop.name}":`).indent();
             w.write(`if (DateOnly.TryParse(value, out var tmp_${propName})) loc_${propName} = tmp_${propName};`);
+            w.write(`else if (DateTime.TryParse(value, out var dt_${propName})) loc_${propName} = DateOnly.FromDateTime(dt_${propName});`);
             w.write("break;").dedent();
           } else if (prop.csType === "DateTime") {
             w.write(`case "${prop.name}":`).indent();
@@ -287,6 +288,7 @@ function emitClass(w, node, sourceFormat = "xlsx") {
           } else if (prop.csType === "TimeOnly") {
             w.write(`case "${prop.name}":`).indent();
             w.write(`if (TimeOnly.TryParse(value, out var tmp_${propName})) loc_${propName} = tmp_${propName};`);
+            w.write(`else if (DateTime.TryParse(value, out var dt_${propName})) loc_${propName} = TimeOnly.FromDateTime(dt_${propName});`);
             w.write("break;").dedent();
           }
         }
@@ -336,6 +338,7 @@ function emitClass(w, node, sourceFormat = "xlsx") {
           } else if (prop.csType === "DateOnly") {
             w.write(`case "${prop.name}":`).indent();
             w.write(`if (DateOnly.TryParse(value, out var v_${propName})) cfg.${propName} = v_${propName};`);
+            w.write(`else if (DateTime.TryParse(value, out var dt_${propName})) cfg.${propName} = DateOnly.FromDateTime(dt_${propName});`);
             w.write("break;").dedent();
           } else if (prop.csType === "DateTime") {
             w.write(`case "${prop.name}":`).indent();
@@ -344,6 +347,7 @@ function emitClass(w, node, sourceFormat = "xlsx") {
           } else if (prop.csType === "TimeOnly") {
             w.write(`case "${prop.name}":`).indent();
             w.write(`if (TimeOnly.TryParse(value, out var v_${propName})) cfg.${propName} = v_${propName};`);
+            w.write(`else if (DateTime.TryParse(value, out var dt_${propName})) cfg.${propName} = TimeOnly.FromDateTime(dt_${propName});`);
             w.write("break;").dedent();
           }
         }

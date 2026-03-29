@@ -66,12 +66,14 @@ namespace Cpmf.Config
                         break;
                     case "CutoffDate":
                         if (DateOnly.TryParse(value, out var v_CutoffDate)) cfg.CutoffDate = v_CutoffDate;
+                        else if (DateTime.TryParse(value, out var dt_CutoffDate)) cfg.CutoffDate = DateOnly.FromDateTime(dt_CutoffDate);
                         break;
                     case "ScheduledAt":
                         if (DateTime.TryParse(value, out var v_ScheduledAt)) cfg.ScheduledAt = v_ScheduledAt;
                         break;
                     case "DailyRunTime":
                         if (TimeOnly.TryParse(value, out var v_DailyRunTime)) cfg.DailyRunTime = v_DailyRunTime;
+                        else if (DateTime.TryParse(value, out var dt_DailyRunTime)) cfg.DailyRunTime = TimeOnly.FromDateTime(dt_DailyRunTime);
                         break;
                 }
             }
@@ -119,15 +121,18 @@ namespace Cpmf.Config
                         break;
                     case "ExpiresOn":
                         if (DateOnly.TryParse(value, out var v_ExpiresOn)) cfg.ExpiresOn = v_ExpiresOn;
+                        else if (DateTime.TryParse(value, out var dt_ExpiresOn)) cfg.ExpiresOn = DateOnly.FromDateTime(dt_ExpiresOn);
                         break;
                     case "CreatedAt":
                         if (DateTime.TryParse(value, out var v_CreatedAt)) cfg.CreatedAt = v_CreatedAt;
                         break;
                     case "WindowOpen":
                         if (TimeOnly.TryParse(value, out var v_WindowOpen)) cfg.WindowOpen = v_WindowOpen;
+                        else if (DateTime.TryParse(value, out var dt_WindowOpen)) cfg.WindowOpen = TimeOnly.FromDateTime(dt_WindowOpen);
                         break;
                     case "WindowClose":
                         if (TimeOnly.TryParse(value, out var v_WindowClose)) cfg.WindowClose = v_WindowClose;
+                        else if (DateTime.TryParse(value, out var dt_WindowClose)) cfg.WindowClose = TimeOnly.FromDateTime(dt_WindowClose);
                         break;
                 }
             }
