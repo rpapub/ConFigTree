@@ -89,4 +89,12 @@ Q: Is it safe to re-generate when changes happen during maintenance?
 
 A: Yes, with one condition: keep your customisations in a separate file (see above). The generated file is overwrite-safe — drop the new `.cs` into `Lib/` and Studio recompiles. Property names and types track the Config.xlsx exactly, so any drift between the spreadsheet and the code is caught immediately by Verify Project rather than surfacing at runtime. If a setting is renamed or removed in the xlsx, the generated class reflects that and Studio shows a compile error wherever the old name was referenced — which is the point: the error is at design time, not in production.
 
+Q: How do I test that ConFigTree loaded the config correctly at runtime?
+
+A: The quickest check is a `Log Message` activity immediately after the `Load ConFigTree` Assign in `InitAllSettings.xaml`. Log `out_ConFigTree.ToString()` — if the `ToString` feature is enabled in ConFigTree settings, this prints every property and its loaded value to the execution log. Scan the output for zeroes, empty strings, or `False` values where you expect real data: these indicate a silent parse failure (see the loader type mismatch issue for known cases).
+
+For a more structured check, enable the **IsPristine** feature toggle before generating. The generated class gains an `IsPristine` property that returns `true` only when every value still matches its generation-time default. After loading, assert `out_ConFigTree.IsPristine = False` — if it is still `True`, nothing was loaded. This is a useful smoke test in the `Init` state of REFramework before the robot does any real work.
+
+For production hardening, wrap the `Load` call in a Try/Catch and treat a pristine-after-load result as an initialisation failure.
+
 -->
